@@ -4,13 +4,15 @@ const App_1 = require("./App");
 const ReQL_1 = require("./DataLayer/Database/ReQL");
 const AuthRoutes_1 = require("./IOLayer/implementation/AuthRoutes");
 const UserRoutes_1 = require("./IOLayer/implementation/UserRoutes");
+const PartyRoutes_1 = require("./IOLayer/implementation/PartyRoutes");
 const port = 3000;
 let db = new ReQL_1.default();
 db.connect("YouParty", (error, res) => {
     if (!error) {
         let app = new App_1.default(db, [
             new AuthRoutes_1.default(),
-            new UserRoutes_1.default()
+            new UserRoutes_1.default(),
+            new PartyRoutes_1.default()
         ]).express;
         /*app.use((req, res, next) => {
             const err = new Error('Not Found');

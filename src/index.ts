@@ -3,6 +3,7 @@ import ReQL from './DataLayer/Database/ReQL';
 import * as BodyParser from 'body-parser';
 import AuthRoutes from './IOLayer/implementation/AuthRoutes';
 import UserRoutes from './IOLayer/implementation/UserRoutes';
+import PartyRoutes from './IOLayer/implementation/PartyRoutes';
 
 const port = 3000
 
@@ -13,7 +14,8 @@ db.connect("YouParty", (error, res) => {
 
         let app = new App(db, [
             new AuthRoutes(),
-            new UserRoutes()
+            new UserRoutes(),
+            new PartyRoutes()
         ]).express;
 
         /*app.use((req, res, next) => {
