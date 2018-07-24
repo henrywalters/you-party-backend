@@ -1,16 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const DataObject_1 = require("../Abstract/DataObject");
-class Party extends DataObject_1.default {
+class PartyGuest extends DataObject_1.default {
     constructor() {
         super(...arguments);
+        this.Table = "PartyGuests";
         this.Schema = {
-            name: 'string',
-            host: 'string',
-            partyKey: 'string'
+            partyId: 'string',
+            guestId: 'string'
         };
-        this.Table = "Parties";
     }
 }
-exports.default = Party;
-//# sourceMappingURL=Party.js.map
+exports.default = PartyGuest;
+//# sourceMappingURL=PartyGuest.js.map

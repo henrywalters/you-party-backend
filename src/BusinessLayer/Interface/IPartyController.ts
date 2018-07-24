@@ -1,4 +1,4 @@
 export default interface IPartyController {
-    newParty(partyName: string, cb: {(error, party): void});
+    newParty(partyName: string, userId: string, cb: {(error, party): void});
     //joinParty(partyKey: string, cb: {(error, party): void});
 }

@@ -4,7 +4,7 @@ const UserController_1 = require("../../BusinessLayer/Implementation/UserControl
 const RouterHelper_1 = require("../../Helpers/RouterHelper");
 const Auth_1 = require("../../AuthLayer/implementation/Auth");
 class UserRoutes {
-    route(app, ds) {
+    route(app, socket, ds, pool) {
         let user = new UserController_1.default(ds);
         let auth = new Auth_1.default(ds);
         app.get("/self", (req, res) => {

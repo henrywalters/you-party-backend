@@ -1,13 +1,14 @@
 import IResourceRouter from '../interface/IResourceRouter';
 import IQueryable from '../../DataLayer/Interface/IQueryable';
 import Auth from '../../AuthLayer/implementation/Auth';
+import IResourcePool from '../interface/IResourcePool';
 
 export default class AuthRoutes implements IResourceRouter {
-    route(app: any, ds: IQueryable) {
+    route(app: any, socket: SocketIO.Socket,  ds: IQueryable, pool: IResourcePool) {
         let auth = new Auth(ds);
 
         app.post("/login", (req, res) => {
-            console.log("Posting");
+            console.log(req);
 
             auth.login(req.body.username, req.body.password, (jwt) => {
                 if (jwt) {

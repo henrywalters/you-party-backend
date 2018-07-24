@@ -1,8 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class DataObject {
+    constructor() {
+        this.ResourceType = null;
+        this.ResourcePool = null;
+    }
     setDataSource(database) {
         this.DataSource = database;
+    }
+    setResourcePool(resourcePool, resourceType) {
+        this.ResourcePool = resourcePool;
+        this.ResourceType = resourceType;
     }
     isValidPartialObject(validate) {
         let valid = true;
@@ -56,8 +64,15 @@ class DataObject {
         this.DataSource.getAll(this.Table, (error, res) => { callback(error, res); });
     }
     create(model, callback) {
+        console.log("Creating Object");
         if (this.isValidObject(model)) {
-            this.DataSource.create(this.Table, model, (error, res) => { callback(error, res); });
+            console.log("Valid Object");
+            this.DataSource.create(this.Table, model, (error, res) => {
+                if (this.ResourcePool !== null) {
+                    this.ResourcePool.createResource(this.ResourceType, res);
+                }
+                callback(error, res);
+            });
         }
         else {
             console.log("Invalid Object expected:");
@@ -67,7 +82,12 @@ class DataObject {
     }
     update(index, changes, callback) {
         if (this.isValidPartialObject(changes)) {
-            this.DataSource.update(this.Table, index, changes, (error, res) => { callback(error, res); });
+            this.DataSource.update(this.Table, index, changes, (error, res) => {
+                if (this.ResourcePool !== null) {
+                    this.ResourcePool.updateResource(this.ResourceType, res);
+                }
+                callback(error, res);
+            });
         }
         else {
             console.log("Invalid Object expected:");
@@ -76,7 +96,14 @@ class DataObject {
         }
     }
     destroy(index, callback) {
-        this.DataSource.destroy(this.Table, index, (success) => { callback(success); });
+        this.DataSource.destroy(this.Table, index, (success) => {
+            if (this.ResourcePool !== null) {
+                this.ResourcePool.destroyResource(this.ResourceType, {
+                    id: index
+                });
+            }
+            callback(success);
+        });
     }
 }
 exports.default = DataObject;

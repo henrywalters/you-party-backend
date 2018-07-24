@@ -22,6 +22,7 @@ export default class Auth implements IAuth {
         this.Controller.validateUser(usernameOrEmail, password, (error, user) => {
             if (!error) {
                 let payload = {
+                    id: user['id'],
                     username: user['username'],
                     email: user['email'],
                     sub: "Access Token"
@@ -120,6 +121,7 @@ export default class Auth implements IAuth {
                         cb(false);
                     } else {
                         let payload = {
+                            id: decoded['id'],
                             username: decoded['username'],
                             email: decoded['email'],
                             sub: "Access Token"

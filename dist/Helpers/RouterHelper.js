@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class RouterHelper {
     static matchBody(required, body) {
-        console.log(required, body);
         for (let i = 0; i < required.length; i++) {
-            console.log(required[i], body);
             if (!body.hasOwnProperty(required[i])) {
                 return false;
             }

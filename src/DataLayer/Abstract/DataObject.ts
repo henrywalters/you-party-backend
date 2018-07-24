@@ -1,15 +1,23 @@
 import IDataObject from "../Interface/IDataObject";
 import IDatabase from "../Interface/IDatabase";
 import IQueryable from "../Interface/IQueryable";
+import IResourcePool from '../../IOLayer/interface/IResourcePool';
 
 export default abstract class DataObject implements IDataObject {
     
     abstract Schema: Object;
     abstract Table: string;
     DataSource: IQueryable;
+    ResourceType: string = null;
+    ResourcePool: IResourcePool = null;
 
     setDataSource(database: IQueryable) {
         this.DataSource = database;
+    }
+
+    setResourcePool(resourcePool: IResourcePool, resourceType: string) {
+        this.ResourcePool = resourcePool;
+        this.ResourceType = resourceType;
     }
 
     isValidPartialObject(validate: Object): boolean {
@@ -74,8 +82,16 @@ export default abstract class DataObject implements IDataObject {
     }
 
     create(model: Object, callback: {(error: boolean, res: Object):void}): void {
+        console.log("Creating Object");
         if (this.isValidObject(model)) {
-            this.DataSource.create(this.Table, model, (error, res) => {callback(error, res)});
+            console.log("Valid Object");
+            this.DataSource.create(this.Table, model, (error, res) => {
+                if (this.ResourcePool !== null) {
+                    this.ResourcePool.createResource(this.ResourceType, res);
+                }
+                callback(error, res)
+            });
+            
         } else {
             console.log("Invalid Object expected:");
             console.log(this.Schema);
@@ -85,7 +101,12 @@ export default abstract class DataObject implements IDataObject {
 
     update(index: string, changes: Object, callback: {(error: boolean, res: object):void}): void {
         if (this.isValidPartialObject(changes)) {
-            this.DataSource.update(this.Table, index, changes, (error, res) => {callback(error, res)});
+            this.DataSource.update(this.Table, index, changes, (error, res) => {
+                if (this.ResourcePool !== null) {
+                    this.ResourcePool.updateResource(this.ResourceType, res);
+                }
+                callback(error, res)
+            });
         } else {
             console.log("Invalid Object expected:");
             console.log(this.Schema);
@@ -94,6 +115,13 @@ export default abstract class DataObject implements IDataObject {
     }
 
     destroy(index: string, callback: {(success: boolean):void}): void {
-        this.DataSource.destroy(this.Table, index, (success) => {callback(success)});
+        this.DataSource.destroy(this.Table, index, (success) => {
+            if (this.ResourcePool !== null) {
+                this.ResourcePool.destroyResource(this.ResourceType, {
+                    id: index
+                });
+            }
+            callback(success)
+        });
     }
 }

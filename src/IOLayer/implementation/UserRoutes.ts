@@ -3,9 +3,10 @@ import IQueryable from "../../DataLayer/Interface/IQueryable";
 import UserController from "../../BusinessLayer/Implementation/UserController";
 import RouterHelper from "../../Helpers/RouterHelper";
 import Auth from "../../AuthLayer/implementation/Auth";
+import IResourcePool from "../interface/IResourcePool";
 
 export default class UserRoutes implements IResourceRouter {
-    route(app: any, ds: IQueryable) {
+    route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
         let user = new UserController(ds);
         let auth = new Auth(ds);
 

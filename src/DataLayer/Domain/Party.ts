@@ -3,7 +3,8 @@ import DataObject from '../Abstract/DataObject';
 export default class Party extends DataObject {
     Schema: Object = {
         name: 'string',
-        key: 'string'
+        host: 'string',
+        partyKey: 'string'
     };
 
     Table: string = "Parties";
