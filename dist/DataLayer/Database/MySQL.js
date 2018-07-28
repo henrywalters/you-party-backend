@@ -9,17 +9,24 @@ class MySQL {
             password: "50538b85",
             database: "heroku_f49b8ff223a1846"
         };
+        this.connect("MySQL");
+    }
+    connect(database, callback) {
         this.Connection = mysql.createConnection(this.ConnectionDetails);
         this.Connected = true;
         this.Connection.connect((err) => {
             if (err) {
                 console.log(err);
                 this.Connected = false;
+                setTimeout(this.connect("MySQL"), 2000);
             }
         });
-    }
-    connect(database, callback) {
-        console.log("Connection handled in constructor. Don't worry about it");
+        this.Connection.on('error', (err) => {
+            console.log('db error', err);
+            if (err.code === "PROTOCOL_CONNECTION_LOST") {
+                this.connect("MySQL");
+            }
+        });
     }
     getDbType() {
         return "MySQL";

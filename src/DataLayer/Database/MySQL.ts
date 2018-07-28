@@ -24,7 +24,10 @@ export default class MySQL implements IDatabase, IQueryable {
             password: "50538b85",
             database: "heroku_f49b8ff223a1846"
         }
+        this.connect("MySQL");
+    }
 
+    connect(database: string, callback?: IDataCallback) {
         this.Connection = mysql.createConnection(this.ConnectionDetails);
 
         this.Connected = true;
@@ -33,12 +36,16 @@ export default class MySQL implements IDatabase, IQueryable {
             if (err) {
                 console.log(err)
                 this.Connected = false;
+                setTimeout(this.connect("MySQL"), 2000);
             }
         })
-    }
 
-    connect(database: string, callback?: IDataCallback) {
-        console.log("Connection handled in constructor. Don't worry about it");
+        this.Connection.on('error', (err) => {
+            console.log('db error', err);
+            if (err.code === "PROTOCOL_CONNECTION_LOST") {
+                this.connect("MySQL");
+            }
+        })
     }
 
     getDbType(): String {
