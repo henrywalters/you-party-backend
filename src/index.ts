@@ -25,7 +25,7 @@ let app = new App(db, new ResourcePool(
     new PartyRoutes()
 ]).express;
 
-app.listen(port, ((err) => {
+app.listen(process.env.PORT || port, ((err) => {
 
     app.get("/", (req, res) => {
         res.json("Hello World");
