@@ -49,7 +49,11 @@ class App {
 
 			this.mountRoutes(routes);
 		})
-  	}
+
+		setInterval(() => {
+			this.IO.emit("Server-Time", new Date());
+		}, 50)
+  	}	
 
   	private mountRoutes (routes: Array<IResourceRouter>): void {
 		this.express.use(function(req, res, next) {
