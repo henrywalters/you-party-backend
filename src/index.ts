@@ -28,9 +28,11 @@ let mainApp = new App(db, new ResourcePool(
 let app = mainApp.express;
 let server = mainApp.Server;
 
-app.get("/", (req, res) => {
-    res.json("Hello World");
-})
+mainApp.mountRoutes([
+    new AuthRoutes(),
+    new UserRoutes(),
+    new PartyRoutes()
+]);
 
 server.listen(process.env.PORT || port);
 /*

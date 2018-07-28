@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mysql = require("mysql");
+const UUID = require("uuid/v4");
 class MySQL {
     constructor() {
         this.ConnectionDetails = {
@@ -40,12 +41,75 @@ class MySQL {
         });
     }
     get(table, index, callback) {
+        let sql = "SELECT * FROM ?? WHERE ?? = ?";
+        let inserts = [table, 'id', index];
+        sql = mysql.format(sql, inserts);
+        this.Connection.query(sql, (error, row, fields) => {
+            if (error) {
+                callback(true, null);
+            }
+            else {
+                callback(false, row[0]);
+            }
+        });
     }
     getWhere(table, filter, callback) {
+        let sql = "SELECT * FROM ?? WHERE ";
+        let inserts = [table];
+        let sqlQs = Object.keys(filter).map((col) => {
+            inserts.push(col);
+            inserts.push(filter[col]);
+            return "?? = ?";
+        });
+        sql += sqlQs.join(" AND ");
+        sql = mysql.format(sql, inserts);
+        this.Connection.query(sql, (error, rows, fields) => {
+            if (error) {
+                callback(true, null);
+            }
+            else {
+                callback(false, rows);
+            }
+        });
     }
     getAll(table, callback) {
+        let sql = "SELECT * FROM ??";
+        let inserts = [table];
+        sql = mysql.format(sql, inserts);
+        this.Connection.query(sql, (error, row, fields) => {
+            if (error) {
+                callback(true, null);
+            }
+            else {
+                callback(false, row[0]);
+            }
+        });
     }
     create(table, model, callback) {
+        let id = UUID();
+        model["id"] = id;
+        let keys = Object.keys(model);
+        let inserts = [table];
+        let colQs = keys.map((x) => {
+            inserts.push(x);
+            return "??";
+        });
+        let valQs = keys.map((x) => {
+            inserts.push(model[x]);
+            return "?";
+        });
+        let sql = "INSERT INTO ?? (" + colQs.join(", ") + ") VALUES (" + valQs.join(", ") + ")";
+        sql = mysql.format(sql, inserts);
+        console.log(sql);
+        this.Connection.query(sql, (error, rows, fields) => {
+            if (error) {
+                console.log(error);
+                callback(true, null);
+            }
+            else {
+                callback(false, model);
+            }
+        });
     }
     update(table, index, changes, callback) {
     }

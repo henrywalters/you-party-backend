@@ -24,8 +24,8 @@ class App {
             socket.on('join-sub-resource', (resource) => {
                 this.ResourcePool.joinSubPool(resource.resource, resource.subIndex, socket);
             });
-            this.mountRoutes(routes);
         });
+        this.mountRoutes(routes);
         setInterval(() => {
             this.IO.emit("Server-Time", new Date());
         }, 1000);
@@ -39,7 +39,7 @@ class App {
             next();
         });
         for (let i = 0; i < routes.length; i++) {
-            routes[i].route(this.router, this.Socket, this.DataSource, this.ResourcePool);
+            routes[i].route(this.router, this.Server, this.DataSource, this.ResourcePool);
         }
         this.express.use('/', this.router);
     }

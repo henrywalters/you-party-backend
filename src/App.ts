@@ -47,15 +47,17 @@ class App {
 				this.ResourcePool.joinSubPool(resource.resource, resource.subIndex, socket);
 			})
 
-			this.mountRoutes(routes);
+			
 		})
+
+		this.mountRoutes(routes);
 
 		setInterval(() => {
 			this.IO.emit("Server-Time", new Date());
 		}, 1000)
   	}	
 
-  	private mountRoutes (routes: Array<IResourceRouter>): void {
+  	public mountRoutes (routes: Array<IResourceRouter>): void {
 		this.express.use(function(req, res, next) {
 			res.setHeader("Access-Control-Allow-Origin", "*");
     		res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -67,7 +69,7 @@ class App {
 
 
 		for (let i = 0; i < routes.length; i++) {
-			routes[i].route(this.router, this.Socket, this.DataSource, this.ResourcePool);
+			routes[i].route(this.router, this.Server, this.DataSource, this.ResourcePool);
 		}
 		this.express.use('/', this.router)   
 	 }

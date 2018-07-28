@@ -8,6 +8,13 @@ const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
 const port = 8080;
 let db = new MySQL_1.default();
+db.query(`
+CREATE TABLE PartyGuests ( 
+    id VARCHAR(100),
+    guestId VARCHAR(100),
+    partyId VARCHAR(100)
+)
+`);
 let mainApp = new App_1.default(db, new ResourcePool_1.default([
     "Party"
 ]), [
@@ -17,9 +24,11 @@ let mainApp = new App_1.default(db, new ResourcePool_1.default([
 ]);
 let app = mainApp.express;
 let server = mainApp.Server;
-app.get("/", (req, res) => {
-    res.json("Hello World");
-});
+mainApp.mountRoutes([
+    new AuthRoutes_1.default(),
+    new UserRoutes_1.default(),
+    new PartyRoutes_1.default()
+]);
 server.listen(process.env.PORT || port);
 /*
 let db = new ReQL();

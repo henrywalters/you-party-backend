@@ -15,6 +15,7 @@ class UserRoutes {
                 self: user
             });
         });
+        console.log("Adding User Routes");
         app.post("/user", (req, res) => {
             let required = ["username", "email", "password", "confirm"];
             console.log("posted user");
