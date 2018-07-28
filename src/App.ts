@@ -33,9 +33,8 @@ class App {
 		//initialize socket server
 
 		this.SocketServer = createServer(this.express);
-		this.IO = SocketIO(this.SocketServer);		
-		
-		this.IO.origins("http://localhost:3001");
+		this.IO = SocketIO.listen(this.SocketServer);		
+
 		this.IO.on('connect', (socket: SocketIO.Socket) => {
 			console.log("client connected");
 			this.Socket = socket;
@@ -50,8 +49,6 @@ class App {
 
 			this.mountRoutes(routes);
 		})
-
-		this.SocketServer.listen(4200);
   	}
 
   	private mountRoutes (routes: Array<IResourceRouter>): void {

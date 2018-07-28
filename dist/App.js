@@ -13,8 +13,7 @@ class App {
         this.ResourcePool = resourcepool;
         //initialize socket server
         this.SocketServer = http_1.createServer(this.express);
-        this.IO = SocketIO(this.SocketServer);
-        this.IO.origins("http://localhost:3001");
+        this.IO = SocketIO.listen(this.SocketServer);
         this.IO.on('connect', (socket) => {
             console.log("client connected");
             this.Socket = socket;
@@ -27,7 +26,6 @@ class App {
             });
             this.mountRoutes(routes);
         });
-        this.SocketServer.listen(4200);
     }
     mountRoutes(routes) {
         this.express.use(function (req, res, next) {
