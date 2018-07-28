@@ -6,7 +6,7 @@ const UserRoutes_1 = require("./IOLayer/implementation/UserRoutes");
 const PartyRoutes_1 = require("./IOLayer/implementation/PartyRoutes");
 const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
-const port = 3000;
+const port = 8080;
 let db = new MySQL_1.default();
 let app = new App_1.default(db, new ResourcePool_1.default([
     "Party"
@@ -15,7 +15,7 @@ let app = new App_1.default(db, new ResourcePool_1.default([
     new UserRoutes_1.default(),
     new PartyRoutes_1.default()
 ]).express;
-app.listen(port, ((err) => {
+app.listen(process.env.PORT || port, ((err) => {
     app.get("/", (req, res) => {
         res.json("Hello World");
     });
