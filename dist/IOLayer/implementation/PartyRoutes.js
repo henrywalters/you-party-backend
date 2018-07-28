@@ -82,12 +82,12 @@ class PartyRoutes {
         app.post("/party/:id/join", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
-            party.joinParty(req['params']['id'], user['id'], (error, party) => {
+            party.joinParty(req['params']['id'], user['id'], (error, guest) => {
                 console.log(error, party);
                 if (!error && typeof party !== undefined) {
                     res.json({
                         success: true,
-                        party: party
+                        guest: guest
                     });
                 }
                 else {
