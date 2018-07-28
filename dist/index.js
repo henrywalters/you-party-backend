@@ -8,13 +8,6 @@ const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
 const port = 8080;
 let db = new MySQL_1.default();
-db.query(`
-CREATE TABLE PartyGuests ( 
-    id VARCHAR(100),
-    guestId VARCHAR(100),
-    partyId VARCHAR(100)
-)
-`);
 let mainApp = new App_1.default(db, new ResourcePool_1.default([
     "Party"
 ]), [

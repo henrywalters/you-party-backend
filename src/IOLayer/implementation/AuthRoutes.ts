@@ -8,8 +8,7 @@ export default class AuthRoutes implements IResourceRouter {
         let auth = new Auth(ds);
 
         app.post("/login", (req, res) => {
-            console.log(req);
-
+            console.log(req.body);
             auth.login(req.body.username, req.body.password, (jwt) => {
                 if (jwt) {
                     res.json({
