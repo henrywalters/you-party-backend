@@ -52,7 +52,7 @@ class App {
 
 		setInterval(() => {
 			this.IO.emit("Server-Time", new Date());
-		}, 50)
+		}, 1000)
   	}	
 
   	private mountRoutes (routes: Array<IResourceRouter>): void {

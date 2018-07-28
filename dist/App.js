@@ -28,7 +28,7 @@ class App {
         });
         setInterval(() => {
             this.IO.emit("Server-Time", new Date());
-        }, 50);
+        }, 1000);
     }
     mountRoutes(routes) {
         this.express.use(function (req, res, next) {
