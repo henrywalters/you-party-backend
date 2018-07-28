@@ -22,5 +22,22 @@ export default class AuthRoutes implements IResourceRouter {
                 }
             })
         })
+
+        app.post("/refresh", (req, res) => {
+            if (typeof req.body.refreshToken !== undefined) {
+                auth.refreshToken(req.body.refreshToken, (jwt) => {
+                    if (jwt) {
+                        res.json({
+                            success: true,
+                            tokens: jwt
+                        });
+                    } else {
+                        res.json({
+                            success: false
+                        })
+                    }
+                })
+            }
+        })
     }
 }
