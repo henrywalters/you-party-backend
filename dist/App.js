@@ -12,8 +12,8 @@ class App {
         this.DataSource = datasource;
         this.ResourcePool = resourcepool;
         //initialize socket server
-        this.SocketServer = http_1.createServer(this.express);
-        this.IO = SocketIO.listen(this.SocketServer);
+        this.Server = http_1.createServer(this.express);
+        this.IO = SocketIO.listen(this.Server);
         this.IO.on('connect', (socket) => {
             console.log("client connected");
             this.Socket = socket;

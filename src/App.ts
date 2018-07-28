@@ -16,7 +16,7 @@ class App {
 	public DataSource: IQueryable;
 	public ResourcePool: IResourcePool;
 	public router;
-	public SocketServer;
+	public Server;
 	public IO: SocketIO.Server;
 	public Socket: SocketIO.Socket;
 
@@ -32,8 +32,8 @@ class App {
 	
 		//initialize socket server
 
-		this.SocketServer = createServer(this.express);
-		this.IO = SocketIO.listen(this.SocketServer);		
+		this.Server = createServer(this.express);
+		this.IO = SocketIO.listen(this.Server);		
 
 		this.IO.on('connect', (socket: SocketIO.Socket) => {
 			console.log("client connected");

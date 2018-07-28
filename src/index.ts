@@ -15,7 +15,7 @@ const port = 8080
 
 let db = new MySQL();
 
-let app = new App(db, new ResourcePool(
+let mainApp = new App(db, new ResourcePool(
     [
         "Party"
     ]
@@ -23,19 +23,16 @@ let app = new App(db, new ResourcePool(
     new AuthRoutes(),
     new UserRoutes(),
     new PartyRoutes()
-]).express;
+]);
 
-app.listen(process.env.PORT || port, ((err) => {
+let app = mainApp.express;
+let server = mainApp.Server;
 
-    app.get("/", (req, res) => {
-        res.json("Hello World");
-    })
+app.get("/", (req, res) => {
+    res.json("Hello World");
+})
 
-    if (err) {
-        return console.log(err);
-    }
-}));
-
+server.listen(process.env.PORT || port);
 /*
 let db = new ReQL();
 
