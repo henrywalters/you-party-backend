@@ -76,7 +76,7 @@ export default class UserController {
 
     validateUser(usernameOrEmail: string, password: string, cb: {(error, user): void}): void {
         this.UserObject.getWhere({username: usernameOrEmail}, (error, user) => {
-            if (!error) {
+            if (!error && user.length > 0) {
                 if (user.length > 0) {
                     BCrypt.compare(password, user[0]['password'], (err, res) => {
                         if (!err && res) {
