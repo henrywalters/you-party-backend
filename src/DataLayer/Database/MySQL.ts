@@ -108,7 +108,7 @@ export default class MySQL implements IDatabase, IQueryable {
             if (error) {
                 callback(true, null);
             } else {
-                callback(false, row[0]);
+                callback(false, row);
             }
         })
     }
@@ -146,10 +146,40 @@ export default class MySQL implements IDatabase, IQueryable {
     }
 
     update(table: string, index: string, changes: Object, callback: {(error: boolean, res: object):void}): void {
+        let sql = "UPDATE ?? SET ";
+        let inserts = [table];
+        sql += Object.keys(changes).map((col) => {
+            inserts.push(col, changes[col]);
+            return " ?? = ? "
+        }).join(", ");
 
+        sql += " WHERE ?? = ?";
+
+        inserts.push('id', index);
+
+        sql = mysql.format(sql, inserts);
+
+        this.Connection.query(sql, (error, row, fields) => {
+            if (error) {
+                callback(true, null);
+            } else {
+                callback(false, row);
+            }
+        })
     }
 
-    destroy(table: string, index: string, callback: {(success: boolean):void}): void {
+    destroy(table: string, index: string, callback: {(error: boolean):void}): void {
+        let sql = "DELETE FROM ?? WHERE ?? = ?";
+        let inserts = [table, 'id', index];
 
+        sql = mysql.format(sql, inserts);
+
+        this.Connection.query(sql, (error, rows, fields) => {
+            if (error) {
+                callback(false);
+            } else {
+                callback(true);
+            }
+        })
     }
 }

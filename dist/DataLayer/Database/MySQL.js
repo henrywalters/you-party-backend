@@ -81,7 +81,7 @@ class MySQL {
                 callback(true, null);
             }
             else {
-                callback(false, row[0]);
+                callback(false, row);
             }
         });
     }
@@ -112,8 +112,36 @@ class MySQL {
         });
     }
     update(table, index, changes, callback) {
+        let sql = "UPDATE ?? SET ";
+        let inserts = [table];
+        sql += Object.keys(changes).map((col) => {
+            inserts.push(col, changes[col]);
+            return " ?? = ? ";
+        }).join(", ");
+        sql += " WHERE ?? = ?";
+        inserts.push('id', index);
+        sql = mysql.format(sql, inserts);
+        this.Connection.query(sql, (error, row, fields) => {
+            if (error) {
+                callback(true, null);
+            }
+            else {
+                callback(false, row);
+            }
+        });
     }
     destroy(table, index, callback) {
+        let sql = "DELETE FROM ?? WHERE ?? = ?";
+        let inserts = [table, 'id', index];
+        sql = mysql.format(sql, inserts);
+        this.Connection.query(sql, (error, rows, fields) => {
+            if (error) {
+                callback(false);
+            }
+            else {
+                callback(true);
+            }
+        });
     }
 }
 exports.default = MySQL;

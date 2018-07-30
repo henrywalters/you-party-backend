@@ -36,7 +36,8 @@ export default class PartyController implements IPartyController {
 
     joinParty(partyId: string, userId: string, cb: {(error, party): void}) {
         this.getParty(partyId, (error, party) => {
-            if (!error && typeof party !== undefined) {
+            console.log(party);
+            if (!error && party != null) {
                 this._Guest.getWhere({guestId: userId, partyId: partyId}, (error, guest) => {
                     console.log(error, guest.length);
                     if (!error && guest.length === 0) {
@@ -58,6 +59,18 @@ export default class PartyController implements IPartyController {
         });
     }
 
+    leaveParty(partyId: string, userId: string, cb: {(error): void}) {
+        this._Guest.getWhere({partyId: partyId, guestId: userId}, (error, guests) => {
+            if (!error && guests.length > 0) {
+                this._Guest.destroy(guests[0]['id'], (error) => {
+                    cb(error);
+                })
+            } else {
+                cb(false);
+            }
+        })
+    }
+
     deleteParty(partyId: string, userId: string, cb: {(success):void}) {
         this._Party.get(partyId, (error, party) => {
             if (!error && party !== null) {
@@ -75,7 +88,10 @@ export default class PartyController implements IPartyController {
     }
 
     getParty(id, cb: {(error, party): void}) {
-        this._Party.get(id, cb);
+        this._Party.get(id, (error, party) => {
+            console.log(error, party);
+            cb(error, party);
+        });
     }
 
     getParties(cb: {(error, parties): void}) {

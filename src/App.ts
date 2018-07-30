@@ -36,10 +36,8 @@ class App {
 		this.IO = SocketIO.listen(this.Server);		
 
 		this.IO.on('connect', (socket: SocketIO.Socket) => {
-			console.log("client connected");
 			this.Socket = socket;
 			socket.on('join-resource', (resource) => {
-				console.log("Joining resource: " + resource);
 				this.ResourcePool.joinPool(resource, socket);
 			})
 

@@ -47,6 +47,7 @@ export default class PartyRoutes implements IResourceRouter {
         */
 
         app.get("/party", (req, res) => {
+            console.log("Getting Parties");
             party.getParties((error, parties) => {
                 if (error) {
                     res.json({
@@ -106,6 +107,18 @@ export default class PartyRoutes implements IResourceRouter {
                         error: error
                     })
                 }
+            })
+        })
+
+        app.post("/party/:id/leave", (req, res) => {
+            auth.validateHeader(req, res);
+
+            let user = auth.getSelf(req);
+
+            party.leaveParty(req['params']['id'], user['id'], (error) => {
+                res.json({
+                    success: error
+                })
             })
         })
 

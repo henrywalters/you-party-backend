@@ -15,10 +15,8 @@ class App {
         this.Server = http_1.createServer(this.express);
         this.IO = SocketIO.listen(this.Server);
         this.IO.on('connect', (socket) => {
-            console.log("client connected");
             this.Socket = socket;
             socket.on('join-resource', (resource) => {
-                console.log("Joining resource: " + resource);
                 this.ResourcePool.joinPool(resource, socket);
             });
             socket.on('join-sub-resource', (resource) => {
