@@ -38,7 +38,7 @@ export default class PartyController implements IPartyController {
         this.getParty(partyId, (error, party) => {
             console.log(party);
             if (!error && party != null) {
-                this._Guest.getWhere({guestId: userId, partyId: partyId}, (error, guest) => {
+                this._Guest.getWhere({guestId: userId}, (error, guest) => {
                     console.log(error, guest.length);
                     if (!error && guest.length === 0) {
                         this._Guest.create({partyId: partyId, guestId: userId}, (err, guest) => {
@@ -50,13 +50,30 @@ export default class PartyController implements IPartyController {
                             }
                         })
                     } else {
-                        cb("Guest already in party", null);
+                        cb("Guest already in party - " + guest[0]['partyId'], null);
                     }
                 });
             } else {
                 cb("Party does not exist", null);
             }
         });
+    }
+
+    currentParty(userId: string, cb: {(error, party): void}) {
+        this._Guest.getWhere({guestId: userId}, (error, guests) => {
+            console.log(guests);
+            if (!error && guests.length > 0) {
+                this.getParty(guests[0]['partyId'], (error, party) => {
+                    if (!error) {
+                        cb(false, party);
+                    } else {
+                        cb(true, null);
+                    }
+                })
+            } else {
+                cb(true, null);
+            }
+        })
     }
 
     leaveParty(partyId: string, userId: string, cb: {(error): void}) {

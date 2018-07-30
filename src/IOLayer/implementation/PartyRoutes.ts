@@ -63,6 +63,25 @@ export default class PartyRoutes implements IResourceRouter {
             })
         })
 
+        app.get("/party/self", (req, res) => {
+            auth.validateHeader(req, res);
+            let user = auth.getSelf(req);
+            party.currentParty(user['id'], (error, party) => {
+                if (error) {
+                    res.json({
+                        success: false,
+                        error: "User not in a party"
+                    })
+                } else {
+                    console.log(error, party);
+                    res.json({
+                        success: true,
+                        party: party
+                    })
+                }
+            });
+        })
+
         app.post("/party", (req, res) => {
             auth.validateHeader(req, res);
             let required = ["name"];

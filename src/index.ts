@@ -15,6 +15,8 @@ const port = 8080
 
 let db = new MySQL();
 
+db.query("DELETE FROM PartyGuests");
+
 let mainApp = new App(db, new ResourcePool(
     [
         "Party"
