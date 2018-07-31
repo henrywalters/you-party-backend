@@ -59,7 +59,7 @@ class PartyRoutes {
                 if (error) {
                     res.json({
                         success: false,
-                        error: "User has no parties"
+                        error: "User is not in party"
                     });
                 }
                 else {
@@ -78,7 +78,7 @@ class PartyRoutes {
                 if (error) {
                     res.json({
                         success: false,
-                        error: "User not in a party"
+                        error: "User has no parties"
                     });
                 }
                 else {
