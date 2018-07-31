@@ -1,6 +1,7 @@
 import IDataCallback from "./IDataCallback";
 
 export default interface IQueryable {
+    query(query: string, callback: {(error: boolean, res: any): void}): void
     get(table: string, index: string, callback: {(error: boolean, res: Object): void }): void;
     getWhere(table: string, filter: Object, callback: {(error: boolean, res: Array<Object>)})
     getAll(table: string, callback: {(error: boolean, res: Array<Object>): void }): void;

@@ -53,17 +53,9 @@ class PartyController {
         });
     }
     currentParty(userId, cb) {
-        this._Guest.getWhere({ guestId: userId }, (error, guests) => {
-            console.log(guests);
-            if (!error && guests.length > 0) {
-                this.getParty(guests[0]['partyId'], (error, party) => {
-                    if (!error) {
-                        cb(false, party);
-                    }
-                    else {
-                        cb(true, null);
-                    }
-                });
+        this._Party.getWhere({ host: userId }, (error, parties) => {
+            if (!error) {
+                cb(false, parties);
             }
             else {
                 cb(true, null);

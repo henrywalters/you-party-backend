@@ -35,9 +35,14 @@ class MySQL {
     isAlive() {
         return this.Connected;
     }
-    query(querystring) {
+    query(querystring, cb) {
         this.Connection.query(querystring, (err, row, fields) => {
-            console.log(err, row, fields);
+            if (err) {
+                cb(true, null);
+            }
+            else {
+                cb(row, fields);
+            }
         });
     }
     get(table, index, callback) {

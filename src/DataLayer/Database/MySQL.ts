@@ -56,10 +56,14 @@ export default class MySQL implements IDatabase, IQueryable {
     isAlive(): boolean {
         return this.Connected;
     }
-
-    query(querystring: string) {
+    
+    query(querystring: string, cb: {(error: boolean, result: any): void}) {
         this.Connection.query(querystring, (err, row, fields) => {
-            console.log(err, row, fields);
+            if (err) {
+                cb(true, null);
+            } else {
+                cb(row, fields);
+            }
         });
     }
 

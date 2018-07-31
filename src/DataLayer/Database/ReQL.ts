@@ -32,6 +32,11 @@ export default class ReQL implements IDatabase, IQueryable {
         return "RethinkDB";
     }
 
+    query(query: string, callback: {(error: boolean, res: any): void}): void {
+        console.log("ERROR: REQL DOES NOT HAVE RAW QUERY.");
+        callback(false, null);
+    }
+
     isAlive(): boolean {
         if (this.connection !== null) {
             return true;

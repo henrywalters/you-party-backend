@@ -24,6 +24,10 @@ class ReQL {
     getDbType() {
         return "RethinkDB";
     }
+    query(query, callback) {
+        console.log("ERROR: REQL DOES NOT HAVE RAW QUERY.");
+        callback(false, null);
+    }
     isAlive() {
         if (this.connection !== null) {
             return true;

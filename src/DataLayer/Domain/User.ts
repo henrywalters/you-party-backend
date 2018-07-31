@@ -1,3 +1,4 @@
+import * as mysql from 'mysql';
 import DataObject from "../Abstract/DataObject";
 
 export default class User extends DataObject {
