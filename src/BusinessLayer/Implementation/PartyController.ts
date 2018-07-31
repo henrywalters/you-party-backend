@@ -100,7 +100,7 @@ export default class PartyController implements IPartyController {
 
     deleteParty(partyId: string, userId: string, cb: {(success):void}) {
         this._Party.get(partyId, (error, party) => {
-            if (!error && party !== null && typeof party['host'] != undefined) { 
+            if (!error && typeof party != undefined && party !== null ) { 
                 if (party['host'] === userId) {
                     this._Party.destroy(partyId, (success) => {
                         cb(success);
