@@ -60,6 +60,23 @@ export default class PartyController implements IPartyController {
     }
 
     currentParty(userId: string, cb: {(error, party): void}) {
+        this._Guest.getWhere({guestId: userId}, (error, guest) => {
+            console.log(error, guest);
+            if (!error && guest.length > 0) {
+                this.getParty(guest[0]['partyId'], (error, party) => {
+                    if (!error && party != null) {
+                        cb(false, party);
+                    } else {
+                        cb(true, null);
+                    }
+                })
+            } else {
+                cb(true, null);
+            }
+        })
+    }
+
+    getSelfParties(userId: string, cb: {(error, parties): void}) {
         this._Party.getWhere({host: userId}, (error, parties) => {
             if (!error) {
                 cb(false, parties);

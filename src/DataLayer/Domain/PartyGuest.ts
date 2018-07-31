@@ -1,5 +1,4 @@
 import * as mysql from 'mysql';
-
 import DataObject from '../Abstract/DataObject';
 export default class PartyGuest extends DataObject {
     Table: string = "PartyGuests";

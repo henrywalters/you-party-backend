@@ -70,7 +70,7 @@ export default class PartyRoutes implements IResourceRouter {
                 if (error) {
                     res.json({
                         success: false,
-                        error: "User not in a party"
+                        error: "User is not in party"
                     })
                 } else {
                     console.log(error, party);
@@ -80,6 +80,25 @@ export default class PartyRoutes implements IResourceRouter {
                     })
                 }
             });
+        })
+
+        app.get("/self/parties", (req, res) => {
+            auth.validateHeader(req, res);
+            let user = auth.getSelf(req);
+            party.getSelfParties(user['id'], (error, party) => {
+                if (error) {
+                    res.json({
+                        success: false,
+                        error: "User has no parties"
+                    })
+                } else {
+                    console.log(error, party);
+                    res.json({
+                        success: true,
+                        party: party
+                    })
+                }
+            })
         })
 
         app.post("/party", (req, res) => {

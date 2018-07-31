@@ -65,6 +65,10 @@ export default abstract class DataObject implements IDataObject {
         return valid;
     }
 
+    query(query: string, cb: {(error: boolean, res: any): void}) {
+        this.DataSource.query(this.Table, (error, res) => {cb(error, res)});
+    }
+
     get(index: string, callback: {(error: boolean, res: Object): void }): void {
         this.DataSource.get(this.Table, index, (error, res) => {
             callback(error, res);

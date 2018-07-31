@@ -37,6 +37,7 @@ class MySQL {
     }
     query(querystring, cb) {
         this.Connection.query(querystring, (err, row, fields) => {
+            console.log(err, row, fields);
             if (err) {
                 cb(true, null);
             }

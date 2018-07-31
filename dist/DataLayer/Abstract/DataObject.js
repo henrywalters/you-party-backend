@@ -50,6 +50,9 @@ class DataObject {
         }
         return valid;
     }
+    query(query, cb) {
+        this.DataSource.query(this.Table, (error, res) => { cb(error, res); });
+    }
     get(index, callback) {
         this.DataSource.get(this.Table, index, (error, res) => {
             callback(error, res);
