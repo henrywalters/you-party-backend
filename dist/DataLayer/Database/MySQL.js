@@ -55,7 +55,12 @@ class MySQL {
                 callback(true, null);
             }
             else {
-                callback(false, row[0]);
+                if (row.length === 0) {
+                    callback(true, null);
+                }
+                else {
+                    callback(false, row[0]);
+                }
             }
         });
     }

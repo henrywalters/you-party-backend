@@ -95,7 +95,7 @@ class PartyController {
     deleteParty(partyId, userId, cb) {
         this._Party.get(partyId, (error, party) => {
             console.log(error, party);
-            if (!error && typeof party != undefined && party !== null) {
+            if (!error && party != undefined && party !== null) {
                 if (party['host'] === userId) {
                     this._Party.destroy(partyId, (success) => {
                         cb(success);
