@@ -54,7 +54,7 @@ class PartyRoutes {
                     }
                 });
             }
-            else if (req.query['id'] != 'undefined') {
+            else if (typeof req.query['id'] != 'undefined') {
                 party.getParty(req.query['id'], (error, party) => {
                     if (error) {
                         res.json({
