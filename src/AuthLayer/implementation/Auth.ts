@@ -87,7 +87,7 @@ export default class Auth implements IAuth {
                     if (jwt) {
                         valid = true;
                         console.log(jwt);
-                        if (jwt['actor'] !== actor) {
+                        if (actor !== null && jwt['actor'] !== actor) {
                             valid = false;
                         }
                     }
