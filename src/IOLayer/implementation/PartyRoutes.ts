@@ -48,19 +48,51 @@ export default class PartyRoutes implements IResourceRouter {
 
         app.get("/party", (req, res) => {
             console.log("Getting Parties");
-            party.getParties((error, parties) => {
-                if (error) {
-                    res.json({
-                        success: false,
-                        error: error
-                    })
-                } else {
-                    res.json({
-                        success: true,
-                        parties: parties
-                    })
-                }
-            })
+
+            if (typeof req.query['k'] != 'undefined') {
+                console.log(req.query);
+                party.getPartyByKey(req.query['k'], (error, party) => {
+                    if (error) {
+                        res.json({
+                            success: false,
+                            error: "Party not found"
+                        })
+                    } else {
+                        res.json({
+                            success: true,
+                            party: party
+                        })
+                    }
+                })
+            } else if (req.query['id'] != 'undefined') {
+                party.getParty(req.query['id'], (error, party) => {
+                    if (error) {
+                        res.json({
+                            success: false,
+                            error: "Party not found"
+                        })
+                    } else {
+                        res.json({
+                            success: true,
+                            party: party
+                        })
+                    }
+                })
+            } else {
+                party.getParties((error, parties) => {
+                    if (error) {
+                        res.json({
+                            success: false,
+                            error: error
+                        })
+                    } else {
+                        res.json({
+                            success: true,
+                            parties: parties
+                        })
+                    }
+                })
+            }
         })
 
         app.get("/party/self", (req, res) => {

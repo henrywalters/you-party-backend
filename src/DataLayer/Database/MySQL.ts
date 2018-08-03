@@ -85,6 +85,8 @@ export default class MySQL implements IDatabase, IQueryable {
         })
     }
 
+    
+
     getWhere(table: string, filter: Object, callback: {(error: boolean, res: Array<Object>)}) {
         let sql = "SELECT * FROM ?? WHERE ";
         let inserts = [table];
@@ -106,7 +108,6 @@ export default class MySQL implements IDatabase, IQueryable {
                 callback(false, rows);
             }
         })
-
     }
 
     getAll(table: string, callback: {(error: boolean, res: Array<Object>): void }): void {

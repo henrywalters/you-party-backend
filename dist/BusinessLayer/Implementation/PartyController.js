@@ -116,6 +116,16 @@ class PartyController {
             cb(error, party);
         });
     }
+    getPartyByKey(key, cb) {
+        this._Party.getWhere({ partyKey: key }, (error, party) => {
+            if (!error && party.length > 0) {
+                cb(false, party[0]);
+            }
+            else {
+                cb(true, null);
+            }
+        });
+    }
     getParties(cb) {
         this._Party.getAll(cb);
     }
