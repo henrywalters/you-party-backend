@@ -2,6 +2,7 @@ import IResourceRouter from '../interface/IResourceRouter';
 import IQueryable from '../../DataLayer/Interface/IQueryable';
 import Auth from '../../AuthLayer/implementation/Auth';
 import IResourcePool from '../interface/IResourcePool';
+import RouterHelper from '../../Helpers/RouterHelper';
 
 export default class AuthRoutes implements IResourceRouter {
     route(app: any, socket: SocketIO.Socket,  ds: IQueryable, pool: IResourcePool) {
@@ -21,6 +22,29 @@ export default class AuthRoutes implements IResourceRouter {
                     })
                 }
             })
+        })
+
+        app.post("/login/guest", (req, res) => {
+            if (RouterHelper.matchBody(["name", "partyKey"], req.body)) {
+                auth.guestLogin(req.body.name, req.body.partyKey, (jwt) => {
+                    if (jwt) {
+                        res.json({
+                            success: true,
+                            token: jwt
+                        })
+                    } else {
+                        res.json({
+                            success: false
+                        })
+                    }
+                })
+            } else {
+                res.json({
+                    success: false,
+                    error: RouterHelper.matchBodyError(["name", "partyKey"], req.body)
+                })
+            }
+            
         })
 
         app.post("/refresh", (req, res) => {

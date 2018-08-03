@@ -8,9 +8,6 @@ const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
 const port = 8080;
 let db = new MySQL_1.default();
-db.query("", (error, res) => {
-    console.log(error, res);
-});
 let mainApp = new App_1.default(db, new ResourcePool_1.default([
     "Party"
 ]), [

@@ -3,12 +3,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const JWT = require("jsonwebtoken");
 const UserController_1 = require("../../BusinessLayer/Implementation/UserController");
 const Configs_1 = require("../../Configs");
+const UUID = require("uuid/v4");
 class Auth {
     constructor(datasource) {
-        this.AccessExpiration = 3600;
+        this.AccessExpiration = 3600 * 24;
         this.RefreshExpiration = 3600 * 24 * 30;
         this.Controller = new UserController_1.default(datasource);
         this.Cert = Configs_1.default.Key;
+    }
+    guestLogin(guestName, partyKey, cb) {
+        let payload = {
+            id: UUID(),
+            username: guestName,
+            actor: "guest",
+            sub: "Access Token",
+            partyKey: partyKey
+        };
+        JWT.sign(payload, this.Cert, { expiresIn: this.AccessExpiration }, (error, token) => {
+            if (error) {
+                cb(false);
+            }
+            else {
+                cb({
+                    accessToken: token
+                });
+            }
+        });
     }
     login(usernameOrEmail, password, cb) {
         this.Controller.validateUser(usernameOrEmail, password, (error, user) => {
@@ -16,6 +36,7 @@ class Auth {
                 let payload = {
                     id: user['id'],
                     username: user['username'],
+                    actor: "user",
                     email: user['email'],
                     sub: "Access Token"
                 };
@@ -44,7 +65,7 @@ class Auth {
             }
         });
     }
-    validateHeader(request, response) {
+    validateHeader(request, response, actor = null) {
         let valid = false;
         if (request.headers.hasOwnProperty("authorization")) {
             let token = request.headers.authorization.split("Bearer-");
@@ -53,6 +74,10 @@ class Auth {
                     let jwt = JWT.verify(token[1], this.Cert);
                     if (jwt) {
                         valid = true;
+                        console.log(jwt);
+                        if (jwt['actor'] !== actor) {
+                            valid = false;
+                        }
                     }
                 }
                 catch (error) {
@@ -65,7 +90,9 @@ class Auth {
                 success: false,
                 error: "Access Denied"
             });
+            response.next();
         }
+        return valid;
     }
     getSelf(request) {
         if (request.headers.hasOwnProperty("authorization")) {

@@ -15,9 +15,6 @@ const port = 8080
 
 let db = new MySQL();
 
-db.query("", (error, res) => {
-    console.log(error, res);
-})
 
 
 let mainApp = new App(db, new ResourcePool(

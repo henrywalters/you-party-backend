@@ -91,7 +91,7 @@ class PartyRoutes {
             });
         });
         app.post("/party", (req, res) => {
-            auth.validateHeader(req, res);
+            auth.validateHeader(req, res, "user");
             let required = ["name"];
             let user = auth.getSelf(req);
             let userId = user["id"];

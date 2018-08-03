@@ -5,17 +5,38 @@ import * as FS from 'fs';
 import IQueryable from '../../DataLayer/Interface/IQueryable';
 import UserController from '../../BusinessLayer/Implementation/UserController';
 import Config from '../../Configs';
+import * as UUID from 'uuid/v4';
 
 export default class Auth implements IAuth {
     
     Controller: UserController;
     Cert: string;
-    AccessExpiration: number = 3600;
+    AccessExpiration: number = 3600 * 24;
     RefreshExpiration: number = 3600 * 24 * 30;
 
     constructor(datasource: IQueryable) {
         this.Controller = new UserController(datasource);
         this.Cert = Config.Key;
+    }
+
+    guestLogin(guestName: string, partyKey: string, cb: {(jwt: boolean | Object): void }) {
+        let payload = {
+            id: UUID(),
+            username: guestName,
+            actor: "guest",
+            sub: "Access Token",
+            partyKey: partyKey
+        }
+
+        JWT.sign(payload, this.Cert, {expiresIn: this.AccessExpiration}, (error, token) => {
+            if (error) {
+                cb( false );
+            } else {
+                cb ({
+                    accessToken: token
+                })
+            }
+        })
     }
 
     login(usernameOrEmail: string, password: string, cb: {(jwt: boolean | Object):void}) {
@@ -24,6 +45,7 @@ export default class Auth implements IAuth {
                 let payload = {
                     id: user['id'],
                     username: user['username'],
+                    actor: "user",
                     email: user['email'],
                     sub: "Access Token"
                 }
@@ -55,7 +77,7 @@ export default class Auth implements IAuth {
         })
     }
 
-    validateHeader(request: any, response: any): void {
+    validateHeader(request: any, response: any, actor: string = null): boolean {
         let valid = false;
         if (request.headers.hasOwnProperty("authorization")) {
             let token = request.headers.authorization.split("Bearer-");
@@ -64,6 +86,10 @@ export default class Auth implements IAuth {
                     let jwt = JWT.verify(token[1], this.Cert);
                     if (jwt) {
                         valid = true;
+                        console.log(jwt);
+                        if (jwt['actor'] !== actor) {
+                            valid = false;
+                        }
                     }
                 } catch(error) {
                     
@@ -77,7 +103,9 @@ export default class Auth implements IAuth {
                 success: false,
                 error: "Access Denied"
             })
+            response.next();
         }
+        return valid;
     }
 
     getSelf(request): Object | null {
