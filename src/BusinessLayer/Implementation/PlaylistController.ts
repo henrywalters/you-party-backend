@@ -21,6 +21,7 @@ export default class PlaylistController {
 
     addToPlaylist(guestId: string, partyId: string, videoId: string, cb: {(error: string, video: Object): void}): void {
         this._Guest.getWhere({guestId: guestId}, (error, guests) => {
+            console.log(guests);
             if (guests.length === 0 || guests[0]['partyId'] !== partyId) {
                 cb("User not in party", null);
             } else {

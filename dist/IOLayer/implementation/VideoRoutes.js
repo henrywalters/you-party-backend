@@ -24,10 +24,23 @@ class UserRoutes {
                 });
             }
         });
-        app.post("party/:partyId/add/:videoId", (req, res) => {
+        app.post("/party/:partyId/add/:videoId", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
-            console.log(req.params.partyId, req.params.videoId, user['id']);
+            playlist.addToPlaylist(user['id'], req.params.partyId, req.params.videoId, (error, video) => {
+                if (error !== null) {
+                    res.json({
+                        success: false,
+                        error: error
+                    });
+                }
+                else {
+                    res.json({
+                        success: true,
+                        video: video
+                    });
+                }
+            });
         });
     }
 }

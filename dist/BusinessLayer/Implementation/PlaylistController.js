@@ -15,6 +15,7 @@ class PlaylistController {
     }
     addToPlaylist(guestId, partyId, videoId, cb) {
         this._Guest.getWhere({ guestId: guestId }, (error, guests) => {
+            console.log(guests);
             if (guests.length === 0 || guests[0]['partyId'] !== partyId) {
                 cb("User not in party", null);
             }
