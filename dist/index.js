@@ -6,6 +6,7 @@ const UserRoutes_1 = require("./IOLayer/implementation/UserRoutes");
 const PartyRoutes_1 = require("./IOLayer/implementation/PartyRoutes");
 const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
+const VideoRoutes_1 = require("./IOLayer/implementation/VideoRoutes");
 const port = 8080;
 let db = new MySQL_1.default();
 let mainApp = new App_1.default(db, new ResourcePool_1.default([
@@ -13,14 +14,16 @@ let mainApp = new App_1.default(db, new ResourcePool_1.default([
 ]), [
     new AuthRoutes_1.default(),
     new UserRoutes_1.default(),
-    new PartyRoutes_1.default()
+    new PartyRoutes_1.default(),
+    new VideoRoutes_1.default()
 ]);
 let app = mainApp.express;
 let server = mainApp.Server;
 mainApp.mountRoutes([
     new AuthRoutes_1.default(),
     new UserRoutes_1.default(),
-    new PartyRoutes_1.default()
+    new PartyRoutes_1.default(),
+    new VideoRoutes_1.default()
 ]);
 server.listen(process.env.PORT || port);
 /*

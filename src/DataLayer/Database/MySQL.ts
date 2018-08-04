@@ -59,11 +59,11 @@ export default class MySQL implements IDatabase, IQueryable {
     
     query(querystring: string, cb: {(error: boolean, result: any): void}) {
         this.Connection.query(querystring, (err, row, fields) => {
-            console.log(err, row, fields);
             if (err) {
+                console.log(err);
                 cb(true, null);
             } else {
-                cb(row, fields);
+                cb(false, row);
             }
         });
     }
@@ -143,16 +143,53 @@ export default class MySQL implements IDatabase, IQueryable {
         let sql = "INSERT INTO ?? (" + colQs.join(", ") + ") VALUES (" + valQs.join(", ") + ")";
         sql = mysql.format(sql, inserts);
 
-        console.log(sql);
-
         this.Connection.query(sql, (error, rows, fields) => {
             if (error) {
-                console.log(error);
                 callback(true, null);
             } else {
                 callback(false, model);
             }
         })
+    }
+
+    createArray(table: string, models: Array<Object>, cb: {(error: boolean, res: Array<Object>): void}) {
+        if (models.length === 0) {
+            cb(false, null);
+        } else {
+            models = models.map((model) => {
+                model['id'] = UUID();
+                return model;
+            })
+    
+            let keys = Object.keys(models[0]);
+            
+            let inserts = [table];
+    
+            let colQs = keys.map((x) => {
+                inserts.push(x);
+                return "??"
+            });
+
+            let valQs = models.map((model) => {
+                let subValQs = keys.map((x) => {
+                    inserts.push(model[x]);
+                    return "?";
+                }).join(", ");
+
+                return " ( " + subValQs + " ) ";
+            })
+    
+            let sql = "INSERT INTO ?? (" + colQs.join(", ") + ") VALUES " + valQs.join(", ");
+            sql = mysql.format(sql, inserts);
+            this.Connection.query(sql, (error, rows, fields) => {
+                if (error !== null) {
+                    cb(true, models);
+                } else {
+                    cb(false, null);
+                }
+            })
+        }
+        
     }
 
     update(table: string, index: string, changes: Object, callback: {(error: boolean, res: object):void}): void {

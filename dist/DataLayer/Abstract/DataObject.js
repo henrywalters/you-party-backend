@@ -51,7 +51,8 @@ class DataObject {
         return valid;
     }
     query(query, cb) {
-        this.DataSource.query(this.Table, (error, res) => { cb(error, res); });
+        console.log("Middle query", query);
+        this.DataSource.query(query, (error, res) => { cb(error, res); });
     }
     get(index, callback) {
         this.DataSource.get(this.Table, index, (error, res) => {
@@ -80,6 +81,23 @@ class DataObject {
         else {
             console.log("Invalid Object expected:");
             console.log(this.Schema);
+            callback(false, null);
+        }
+    }
+    createArray(models, callback) {
+        let valid = true;
+        models.map((model) => {
+            if (!this.isValidObject(model)) {
+                valid = false;
+            }
+        });
+        if (valid) {
+            this.DataSource.createArray(this.Table, models, (error, res) => {
+                callback(error, res);
+            });
+        }
+        else {
+            console.log("Invalid Object Detected");
             callback(false, null);
         }
     }

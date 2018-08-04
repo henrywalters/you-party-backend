@@ -7,6 +7,8 @@ import UserRoutes from './IOLayer/implementation/UserRoutes';
 import PartyRoutes from './IOLayer/implementation/PartyRoutes';
 import ResourcePool from './IOLayer/implementation/ResourcePool';
 import MySQL from './DataLayer/Database/MySQL';
+import VideoSearchController from './BusinessLayer/Implementation/VideoSearchController';
+import VideoRoutes from './IOLayer/implementation/VideoRoutes';
 
 
 
@@ -15,8 +17,6 @@ const port = 8080
 
 let db = new MySQL();
 
-
-
 let mainApp = new App(db, new ResourcePool(
     [
         "Party"
@@ -24,7 +24,8 @@ let mainApp = new App(db, new ResourcePool(
 ), [
     new AuthRoutes(),
     new UserRoutes(),
-    new PartyRoutes()
+    new PartyRoutes(),
+    new VideoRoutes()
 ]);
 
 let app = mainApp.express;
@@ -33,7 +34,8 @@ let server = mainApp.Server;
 mainApp.mountRoutes([
     new AuthRoutes(),
     new UserRoutes(),
-    new PartyRoutes()
+    new PartyRoutes(),
+    new VideoRoutes()
 ]);
 
 server.listen(process.env.PORT || port);

@@ -3,7 +3,7 @@ import * as RethinkDB from 'rethinkdb';
 import IDataCallback from '../Interface/IDataCallback';
 import IQueryable from '../Interface/IQueryable';
 
-export default class ReQL implements IDatabase, IQueryable {
+export default class ReQL { // implements IDatabase, IQueryable {
     
     connection: RethinkDB.Connection;
     database: String;

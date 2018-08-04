@@ -66,7 +66,8 @@ export default abstract class DataObject implements IDataObject {
     }
 
     query(query: string, cb: {(error: boolean, res: any): void}) {
-        this.DataSource.query(this.Table, (error, res) => {cb(error, res)});
+        console.log("Middle query", query);
+        this.DataSource.query(query, (error, res) => {cb(error, res)});
     }
 
     get(index: string, callback: {(error: boolean, res: Object): void }): void {
@@ -99,6 +100,24 @@ export default abstract class DataObject implements IDataObject {
         } else {
             console.log("Invalid Object expected:");
             console.log(this.Schema);
+            callback(false, null);
+        }
+    }
+
+    createArray(models: Array<Object>, callback: {(error: boolean, res: Array<Object>): void}): void {
+        let valid = true;
+        models.map((model) => {
+            if (!this.isValidObject(model)) {
+                valid = false;
+            }
+        })
+
+        if (valid) {
+            this.DataSource.createArray(this.Table, models, (error, res) => {
+                callback(error, res);
+            })
+        } else {
+            console.log("Invalid Object Detected");
             callback(false, null);
         }
     }
