@@ -4,11 +4,18 @@ const mysql = require("mysql");
 const UUID = require("uuid/v4");
 class MySQL {
     constructor() {
-        this.ConnectionDetails = {
+        /*this.ConnectionDetails = {
             host: "us-cdbr-iron-east-04.cleardb.net",
             user: "b8d1c717cbeae9",
             password: "50538b85",
             database: "heroku_f49b8ff223a1846"
+        }
+        */
+        this.ConnectionDetails = {
+            host: "199.250.203.59",
+            user: "youpar5_youparty",
+            password: "Cxjm~[-]r7$Z",
+            database: "youpar5_YouParty"
         };
         this.connect("MySQL");
     }
