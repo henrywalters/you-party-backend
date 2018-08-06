@@ -10,6 +10,7 @@ class Auth {
         this.RefreshExpiration = 3600 * 24 * 30;
         this.Controller = new UserController_1.default(datasource);
         this.Cert = ConfigHelper_1.default.getCert("key");
+        console.log("Certificate: " + this.Cert);
     }
     guestLogin(guestName, partyKey, cb) {
         let payload = {

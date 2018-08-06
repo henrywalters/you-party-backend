@@ -10,6 +10,7 @@ import MySQL from './DataLayer/Database/MySQL';
 import VideoSearchController from './BusinessLayer/Implementation/VideoSearchController';
 import VideoRoutes from './IOLayer/implementation/VideoRoutes';
 import Config from './Helpers/ConfigHelper';
+import PlaylistRoutes from './IOLayer/implementation/PlaylistRoutes';
 
 
 
@@ -26,7 +27,8 @@ let mainApp = new App(db, new ResourcePool(
     new AuthRoutes(),
     new UserRoutes(),
     new PartyRoutes(),
-    new VideoRoutes()
+    new VideoRoutes(),
+    new PlaylistRoutes()
 ]);
 
 let app = mainApp.express;
@@ -36,7 +38,8 @@ mainApp.mountRoutes([
     new AuthRoutes(),
     new UserRoutes(),
     new PartyRoutes(),
-    new VideoRoutes()
+    new VideoRoutes(),
+    new PlaylistRoutes()
 ]);
 
 server.listen(process.env.PORT || port);

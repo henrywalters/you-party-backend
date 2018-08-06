@@ -1,0 +1,1 @@
+{"version":3,"file":"Vote.js","sourceRoot":"","sources":["../../../src/DataLayer/Domain/Vote.ts"],"names":[],"mappings":";;AAAA,uDAAgD;AAEhD,UAA0B,SAAQ,oBAAU;IAA5C;;QACI,UAAK,GAAW,OAAO,CAAC;QACxB,WAAM,GAAW;YACb,UAAU,EAAE,QAAQ;YACpB,OAAO,EAAE,QAAQ;YACjB,IAAI,EAAE,QAAQ;SACjB,CAAA;IACL,CAAC;CAAA;AAPD,uBAOC"}

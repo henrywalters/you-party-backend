@@ -46,7 +46,11 @@ export default abstract class DataObject implements IDataObject {
         let cols = Object.keys(validate);
 
         if (cols.length !== Object.keys(this.Schema).length) {
-            console.log("Schema doesn't match object length");
+            if (typeof validate['id'] == 'undefined') { //so if there is no ID present, don't throw error.
+                if (cols.length - 1 !== Object.keys(this.Schema).length) {
+                    return false;
+                }
+            }
             return false;
         }
 
@@ -98,8 +102,18 @@ export default abstract class DataObject implements IDataObject {
             });
             
         } else {
+            let schema = {
+
+            };
+
+            Object.keys((key) => {
+                schema[key] = typeof model[key]
+            })
+
             console.log("Invalid Object expected:");
             console.log(this.Schema);
+            console.log("Instead got:");
+            console.log(schema);
             callback(false, null);
         }
     }

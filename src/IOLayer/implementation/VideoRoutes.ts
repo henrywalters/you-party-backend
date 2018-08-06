@@ -5,7 +5,7 @@ import VideoSearchController from '../../BusinessLayer/Implementation/VideoSearc
 import PlaylistController from '../../BusinessLayer/Implementation/PlaylistController';
 import Auth from "../../AuthLayer/implementation/Auth";
 
-export default class UserRoutes implements IResourceRouter {
+export default class VideoRoutes implements IResourceRouter {
     route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
         let videoSearch = new VideoSearchController(ds);
         let playlist = new PlaylistController(ds, pool);
