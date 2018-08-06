@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const youtube = require("youtube-api-v3-search");
 const Video_1 = require("../../DataLayer/Domain/Video");
 const VideoQuery_1 = require("../../DataLayer/Domain/VideoQuery");
+const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
 class VideoSearchController {
     constructor(ds) {
-        this.apiKey = "AIzaSyD53DiX0mIbfZbaG5Gw4wz70Od9HuwY9Gs";
+        this.apiKey = ConfigHelper_1.default.get("youtube-api-key");
         this.DataSource = ds;
         this._Video = new Video_1.default();
         this._VideoQuery = new VideoQuery_1.default();

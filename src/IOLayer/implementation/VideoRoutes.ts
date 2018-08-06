@@ -27,7 +27,7 @@ export default class UserRoutes implements IResourceRouter {
             }
         })
 
-        app.post("/party/:partyId/add/:videoId", (req, res) => {
+        app.post("/party/:partyId/playlist/:videoId", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
             playlist.addToPlaylist(user['id'], req.params.partyId, req.params.videoId, (error, video) => {
@@ -44,5 +44,20 @@ export default class UserRoutes implements IResourceRouter {
                 }
             })
         });
+
+        app.get("/party/:partyId/playlist", (req, res) => {
+            playlist.getPlaylist(req.params.partyId, (error, playlist) => {
+                if (error) {
+                    res.json({
+                        success: false
+                    })
+                } else {
+                    res.json({
+                        success: true,
+                        playlist: playlist
+                    })
+                }
+            })
+        })
     }
 }

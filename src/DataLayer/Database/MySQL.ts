@@ -3,6 +3,7 @@ import IDatabase from '../Interface/IDatabase';
 import IDataCallback from '../Interface/IDataCallback';
 import IQueryable from '../Interface/IQueryable';
 import * as UUID from 'uuid/v4';
+import Config from '../../Helpers/ConfigHelper';
 
 
 interface IConnection {
@@ -26,12 +27,14 @@ export default class MySQL implements IDatabase, IQueryable {
             database: "heroku_f49b8ff223a1846"
         }
         */
-       this.ConnectionDetails = {
-            host: "199.250.203.59",
-            user: "youpar5_youparty",
-            password: "Cxjm~[-]r7$Z",
-            database: "youpar5_YouParty"
-       }
+        let config = Config.get("database-production");
+
+        this.ConnectionDetails = {
+            host: config['host'],
+            user: config['user'],
+            password: config['password'],
+            database: config['database']
+        }
         this.connect("MySQL");
     }
 

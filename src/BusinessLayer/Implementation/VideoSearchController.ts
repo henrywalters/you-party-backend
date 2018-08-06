@@ -2,6 +2,7 @@ import IQueryable from '../../DataLayer/Interface/IQueryable';
 import * as youtube from 'youtube-api-v3-search';
 import Video from '../../DataLayer/Domain/Video';
 import VideoQuery from '../../DataLayer/Domain/VideoQuery';
+import Config from '../../Helpers/ConfigHelper';
 
 interface IVideo {
     id?: string;
@@ -15,7 +16,7 @@ export default class VideoSearchController {
     DataSource: IQueryable;
     private _Video: Video;
     private _VideoQuery: VideoQuery;
-    private apiKey = "AIzaSyD53DiX0mIbfZbaG5Gw4wz70Od9HuwY9Gs";
+    private apiKey = Config.get("youtube-api-key")
 
     constructor(ds: IQueryable) {
         this.DataSource = ds;

@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const JWT = require("jsonwebtoken");
 const UserController_1 = require("../../BusinessLayer/Implementation/UserController");
-const Configs_1 = require("../../Configs");
 const UUID = require("uuid/v4");
+const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
 class Auth {
     constructor(datasource) {
         this.AccessExpiration = 3600 * 24;
         this.RefreshExpiration = 3600 * 24 * 30;
         this.Controller = new UserController_1.default(datasource);
-        this.Cert = Configs_1.default.Key;
+        this.Cert = ConfigHelper_1.default.getCert("key");
     }
     guestLogin(guestName, partyKey, cb) {
         let payload = {

@@ -9,6 +9,7 @@ import ResourcePool from './IOLayer/implementation/ResourcePool';
 import MySQL from './DataLayer/Database/MySQL';
 import VideoSearchController from './BusinessLayer/Implementation/VideoSearchController';
 import VideoRoutes from './IOLayer/implementation/VideoRoutes';
+import Config from './Helpers/ConfigHelper';
 
 
 

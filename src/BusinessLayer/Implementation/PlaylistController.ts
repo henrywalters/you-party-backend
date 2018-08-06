@@ -44,4 +44,10 @@ export default class PlaylistController {
             }
         })
     }
+
+    getPlaylist(partyId: string, cb: {(error: string, playlist: Array<Object>): void}) {
+        this._Playlist.getPlaylist(partyId, (error, res) => {
+            cb(error, res);
+        })
+    }
 }

@@ -40,6 +40,11 @@ class PlaylistController {
             }
         });
     }
+    getPlaylist(partyId, cb) {
+        this._Playlist.getPlaylist(partyId, (error, res) => {
+            cb(error, res);
+        });
+    }
 }
 exports.default = PlaylistController;
 //# sourceMappingURL=PlaylistController.js.map

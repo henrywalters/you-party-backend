@@ -4,8 +4,8 @@ import * as JWT from 'jsonwebtoken';
 import * as FS from 'fs';
 import IQueryable from '../../DataLayer/Interface/IQueryable';
 import UserController from '../../BusinessLayer/Implementation/UserController';
-import Config from '../../Configs';
 import * as UUID from 'uuid/v4';
+import Config from '../../Helpers/ConfigHelper';
 
 export default class Auth implements IAuth {
     
@@ -16,7 +16,7 @@ export default class Auth implements IAuth {
 
     constructor(datasource: IQueryable) {
         this.Controller = new UserController(datasource);
-        this.Cert = Config.Key;
+        this.Cert = Config.getCert("key");
     }
 
     guestLogin(guestName: string, partyKey: string, cb: {(jwt: boolean | Object): void }) {
