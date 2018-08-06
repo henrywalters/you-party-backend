@@ -12,7 +12,10 @@ export default class Playlist extends DataObject {
 
     getPlaylist(partyId: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.videoId, V.title, V.description, V.videoKey, UP.upvotes, DOWN.downvotes FROM (
+            SELECT P.id, P.videoId, V.title, V.description, V.videoKey, 
+            CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
+            CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
+            FROM (
                 (
                     SELECT * FROM Playlists WHERE partyId = ? AND STATUS = 'queued'
                 ) P
@@ -22,11 +25,11 @@ export default class Playlist extends DataObject {
                 ) V ON V.id = P.videoId
                 LEFT JOIN
                 (
-                    SELECT COUNT(id) upvotes, playlistId FROM Votes WHERE type = 'up'
+                    SELECT COUNT(id) upvotes, playlistId FROM Votes WHERE type = 'up' GROUP BY playlistId
                 ) UP ON UP.playlistId = P.id
                 LEFT JOIN
                 (
-                    SELECT COUNT(id) downvotes, playlistId FROM Votes WHERE type = 'down'
+                    SELECT COUNT(id) downvotes, playlistId FROM Votes WHERE type = 'down' GROUP BY playlistId
                 ) DOWN ON DOWN.playlistId = P.id
             )
         `
