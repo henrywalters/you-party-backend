@@ -126,7 +126,7 @@ export default class ResourcePool implements IResourcePool {
             console.log("Changing: " + resourceType + "-" + subIndex + " by " + changeType);
             for (let i = 0; i < pool.Pool.length; i++) {
                 resource["changeType"] = changeType;
-                
+                resource['subIndex'] = subIndex;
                 pool.Pool[i].emit(resourceType, resource);
             }
         }
