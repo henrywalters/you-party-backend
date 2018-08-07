@@ -29,7 +29,9 @@ export default class PartyController implements IPartyController {
         }, (error, party) => {
             cb(error, party);
             if (!error) {
-                this._Party.ResourcePool.createSubPool("Party", key);
+                this._Party.ResourcePool.createPool("Party-" + party['id']);
+                this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Playlist");
+                this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Votes");
             }
         })
     }

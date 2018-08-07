@@ -15,6 +15,7 @@ class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote_1.default();
         this._Vote.setDataSource(ds);
+        this.ResourcePool = resourcePool;
     }
     addToPlaylist(guestId, partyId, videoId, cb) {
         this._Guest.getWhere({ guestId: guestId }, (error, guests) => {
@@ -35,7 +36,10 @@ class PlaylistController {
                             status: "queued"
                         }, (error, video) => {
                             if (!error) {
-                                cb(null, video);
+                                this._Playlist.getPlaylistVideo(partyId, videoId, (error, video) => {
+                                    this.ResourcePool.createSubResource("Party-" + partyId, "Playlist", video);
+                                    cb(null, video);
+                                });
                             }
                         });
                     }
@@ -76,6 +80,11 @@ class PlaylistController {
                                         cb("Vote failed to create", null);
                                     }
                                     else {
+                                        this.ResourcePool.createSubResource("Party-" + playlist['partyId'], "Votes", {
+                                            guestId: guestId,
+                                            playlistId: playlistId,
+                                            type: type
+                                        });
                                         cb(null, vote);
                                     }
                                 });
@@ -91,6 +100,12 @@ class PlaylistController {
                                 if (vote['type'] === type) {
                                     this._Vote.destroy(vote['id'], (success) => {
                                         cb(null, null);
+                                        this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
+                                            id: vote['id'],
+                                            guestId: guestId,
+                                            playlistId: playlistId,
+                                            type: type
+                                        });
                                     });
                                 }
                                 else {
@@ -102,6 +117,11 @@ class PlaylistController {
                                             cb("Vote failed to update", null);
                                         }
                                         else {
+                                            this.ResourcePool.updateSubResource("Party-" + playlist['partyId'], "Votes", {
+                                                guestId: guestId,
+                                                playlistId: playlistId,
+                                                type: newType
+                                            });
                                             cb(null, vote);
                                         }
                                     });

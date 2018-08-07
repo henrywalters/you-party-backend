@@ -6,6 +6,7 @@ export default interface IResourcePool {
     updateResource(resourceType: string, resource: Object): void;
     destroyResource(resourceType: string, resource: Object): void;
     joinSubPool(resourceType: string, subIndex: string, socket: SocketIO.Socket) : void;
+    createPool(resourceType: string): void;
     createSubPool(resourceType: string, subIndex: string): void;
     createSubResource(resourceType: string, subIndex: string, resource: Object) : void;
     updateSubResource(resourceType: string, subIndex: string, resource: Object) : void;

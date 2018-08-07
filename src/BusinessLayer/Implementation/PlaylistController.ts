@@ -4,8 +4,10 @@ import Party from '../../DataLayer/Domain/Party';
 import PartyGuest from '../../DataLayer/Domain/PartyGuest';
 import IResourcePool from '../../IOLayer/interface/IResourcePool';
 import Vote from '../../DataLayer/Domain/Vote';
+
 export default class PlaylistController {
     private DataSource: IQueryable;
+    private ResourcePool: IResourcePool;
     private _Playlist: Playlist;
     private _Party: Party;
     private _Guest: PartyGuest;
@@ -21,6 +23,8 @@ export default class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote();
         this._Vote.setDataSource(ds);
+
+        this.ResourcePool = resourcePool;
     }
 
     addToPlaylist(guestId: string, partyId: string, videoId: string, cb: {(error: string, video: Object): void}): void {
@@ -40,7 +44,10 @@ export default class PlaylistController {
                             status: "queued"
                         },(error, video) => {
                             if (!error) {
-                                cb(null, video);
+                                this._Playlist.getPlaylistVideo(partyId, videoId, (error, video) => {
+                                    this.ResourcePool.createSubResource("Party-" + partyId, "Playlist", video)
+                                    cb(null, video);
+                                })
                             }
                         });
                     }
@@ -80,6 +87,11 @@ export default class PlaylistController {
                                     if (error) {
                                         cb("Vote failed to create", null);
                                     } else {
+                                        this.ResourcePool.createSubResource("Party-" + playlist['partyId'], "Votes", {
+                                            guestId: guestId,
+                                            playlistId: playlistId,
+                                            type: type
+                                        })
                                         cb(null, vote);
                                     }
                                 })
@@ -96,6 +108,12 @@ export default class PlaylistController {
                                 if (vote['type'] === type) {
                                     this._Vote.destroy(vote['id'], (success) => {
                                         cb(null, null);
+                                        this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
+                                            id: vote['id'], 
+                                            guestId: guestId,
+                                            playlistId: playlistId,
+                                            type: type
+                                        })
                                     })
                                 } else {
                                     let newType = type === "up" ? "down" : "up"; //swap the type
@@ -105,6 +123,11 @@ export default class PlaylistController {
                                         if (error) {
                                             cb("Vote failed to update", null);
                                         } else {
+                                            this.ResourcePool.updateSubResource("Party-" + playlist['partyId'], "Votes", {
+                                                guestId: guestId,
+                                                playlistId: playlistId,
+                                                type: newType
+                                            })
                                             cb(null, vote);
                                         }
                                     })

@@ -3,19 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class ResourcePool {
     constructor(resourceTypes) {
         this.Pools = {};
+        console.log(resourceTypes);
         this.ResourceTypes = resourceTypes;
         for (let i = 0; i < this.ResourceTypes.length; i++) {
-            if (this.poolExists(this.ResourceTypes[i])) {
+            if (!this.poolExists(this.ResourceTypes[i])) {
                 this.Pools[this.ResourceTypes[i]] = {
                     Type: this.ResourceTypes[i],
                     Pool: [],
                     SubPools: {}
                 };
+                console.log(this.ResourceTypes[i]);
+                console.log(this.Pools[this.ResourceTypes[i]]);
             }
         }
     }
     poolExists(resourceType) {
-        if (typeof this.Pools[resourceType] != undefined) {
+        if (typeof this.Pools[resourceType] != 'undefined') {
             return true;
         }
         else {
@@ -24,7 +27,9 @@ class ResourcePool {
     }
     subPoolExists(resourceType, subIndex) {
         if (this.poolExists(resourceType)) {
-            if (typeof this.Pools[resourceType].SubPools[subIndex] !== undefined) {
+            console.log("Pool Exists");
+            if (typeof this.Pools[resourceType].SubPools[subIndex] !== 'undefined') {
+                console.log("Sub Pool Exists");
                 return true;
             }
         }
@@ -36,12 +41,23 @@ class ResourcePool {
     getSubPool(resourceType, subIndex) {
         return this.Pools[resourceType].SubPools[subIndex];
     }
+    createPool(resourceType) {
+        if (!this.poolExists(resourceType)) {
+            this.Pools[resourceType] = {
+                Type: resourceType,
+                Pool: [],
+                SubPools: {}
+            };
+            console.log("Creating Pool: " + resourceType);
+        }
+    }
     createSubPool(resourceType, subIndex) {
         if (!this.getSubPool(resourceType, subIndex)) {
             this.Pools[resourceType].SubPools[subIndex] = {
                 SubIndex: subIndex,
                 Pool: []
             };
+            console.log("Created Pool: " + resourceType + " sub: " + subIndex);
         }
     }
     joinSubPool(resourceType, subIndex, socket) {
@@ -68,9 +84,10 @@ class ResourcePool {
     subResourceChange(resourceType, subIndex, changeType, resource) {
         if (this.subPoolExists(resourceType, subIndex)) {
             let pool = this.getSubPool(resourceType, subIndex);
+            console.log(pool);
+            console.log("Changing: " + resourceType + "-" + subIndex + " by " + changeType);
             for (let i = 0; i < pool.Pool.length; i++) {
                 resource["changeType"] = changeType;
-                console.log("Changing: " + resourceType + "-" + subIndex + " by " + changeType);
                 pool.Pool[i].emit(resourceType, resource);
             }
         }
