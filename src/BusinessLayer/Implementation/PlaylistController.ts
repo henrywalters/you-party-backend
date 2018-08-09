@@ -35,6 +35,7 @@ export default class PlaylistController {
             } else {
                 this._Playlist.getWhere({videoId: videoId, partyId: partyId, status: "queued"}, (error, videos) => {
                     if (videos.length > 0) {
+                        console.log(videos);
                         cb("Video already in playlist", null);
                     } else {
                         this._Playlist.create({
