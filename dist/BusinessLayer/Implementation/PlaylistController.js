@@ -19,12 +19,12 @@ class PlaylistController {
     }
     addToPlaylist(guestId, partyId, videoId, cb) {
         this._Guest.getWhere({ guestId: guestId }, (error, guests) => {
-            console.log(guests);
+            console.log(guests[0], partyId, guests[0]);
             if (guests.length === 0 || guests[0]['partyId'] !== partyId) {
                 cb("User not in party", null);
             }
             else {
-                this._Playlist.getWhere({ videoId: videoId, status: "queued" }, (error, videos) => {
+                this._Playlist.getWhere({ videoId: videoId, partyId: partyId, status: "queued" }, (error, videos) => {
                     if (videos.length > 0) {
                         cb("Video already in playlist", null);
                     }

@@ -86,8 +86,9 @@ class ResourcePool {
             let pool = this.getSubPool(resourceType, subIndex);
             console.log(pool);
             console.log("Changing: " + resourceType + "-" + subIndex + " by " + changeType);
+            resource["changeType"] = changeType;
+            resource['subIndex'] = subIndex;
             for (let i = 0; i < pool.Pool.length; i++) {
-                resource["changeType"] = changeType;
                 pool.Pool[i].emit(resourceType, resource);
             }
         }
