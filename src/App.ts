@@ -10,6 +10,7 @@ import { createServer, Server } from 'http';
 import * as Emitter from 'central-event';
 import IResourcePool from './IOLayer/interface/IResourcePool';
 import * as Cors from 'cors';
+import Party from './DataLayer/Domain/Party';
 
 class App {
   	public express;
@@ -27,7 +28,24 @@ class App {
 		this.DataSource = datasource;
 		this.ResourcePool = resourcepool;
 
+		//initialize the resource pools from existing parties existed. 
+		//without doing this, an error will be thrown. This is intentional. 
+
+		let partyObject = new Party();
+		partyObject.setDataSource(this.DataSource);
 		
+		partyObject.getAll((error, parties) => {
+			console.log("Got Parties");
+			parties.map(party => {
+				console.log(partyObject);
+
+				resourcepool.createPool("Party-" + party['id']);
+				resourcepool.createSubPool("Party-" + party['id'], "Playlist");
+				resourcepool.createSubPool("Party-" + party['id'], "Votes");
+
+				console.log("Initializing pool for party: " + party['name']);
+			})
+		})
 		
 	
 		//initialize socket server

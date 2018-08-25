@@ -4,6 +4,7 @@ const express = require("express");
 const BodyParser = require("body-parser");
 const SocketIO = require("socket.io");
 const http_1 = require("http");
+const Party_1 = require("./DataLayer/Domain/Party");
 class App {
     constructor(datasource, resourcepool, routes) {
         this.express = express();
@@ -11,6 +12,20 @@ class App {
         this.express.use(BodyParser.json());
         this.DataSource = datasource;
         this.ResourcePool = resourcepool;
+        //initialize the resource pools from existing parties existed. 
+        //without doing this, an error will be thrown. This is intentional. 
+        let partyObject = new Party_1.default();
+        partyObject.setDataSource(this.DataSource);
+        partyObject.getAll((error, parties) => {
+            console.log("Got Parties");
+            parties.map(party => {
+                console.log(partyObject);
+                resourcepool.createPool("Party-" + party['id']);
+                resourcepool.createSubPool("Party-" + party['id'], "Playlist");
+                resourcepool.createSubPool("Party-" + party['id'], "Votes");
+                console.log("Initializing pool for party: " + party['name']);
+            });
+        });
         //initialize socket server
         this.Server = http_1.createServer(this.express);
         this.IO = SocketIO.listen(this.Server);
