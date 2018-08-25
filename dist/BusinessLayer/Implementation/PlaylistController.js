@@ -72,7 +72,8 @@ class PlaylistController {
                     }
                     else {
                         this._Vote.getWhere({ guestId: guestId, playlistId: playlistId }, (error, votes) => {
-                            if (error || votes.length === 0) { // add a new vote - no logic required 
+                            let freeVoteTest = true;
+                            if (error || votes.length === 0 || freeVoteTest) { // add a new vote - no logic required 
                                 console.log("Sending: ");
                                 console.log({
                                     guestId: guestId,
@@ -142,9 +143,11 @@ class PlaylistController {
         });
     }
     upvote(guestId, playlistId, cb) {
+        console.log("Upvoting");
         this.vote(guestId, playlistId, "up", cb);
     }
     downvote(guestId, playlistId, cb) {
+        console.log("Downvoting");
         this.vote(guestId, playlistId, "down", cb);
     }
 }

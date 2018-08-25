@@ -80,6 +80,9 @@ class ResourcePool {
                 pool.Pool[i].emit(resourceType, resource);
             }
         }
+        else {
+            throw new Error("Resource Type: " + resourceType + " does not exist. Therefore resource can not change");
+        }
     }
     subResourceChange(resourceType, subIndex, changeType, resource) {
         if (this.subPoolExists(resourceType, subIndex)) {
@@ -91,6 +94,9 @@ class ResourcePool {
             for (let i = 0; i < pool.Pool.length; i++) {
                 pool.Pool[i].emit(resourceType, resource);
             }
+        }
+        else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
     createResource(resourceType, resource) {

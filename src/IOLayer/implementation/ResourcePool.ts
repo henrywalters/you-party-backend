@@ -116,10 +116,13 @@ export default class ResourcePool implements IResourcePool {
                 console.log("Changing: " + resourceType + " by " + changeType);
                 pool.Pool[i].emit(resourceType, resource);
             }
+        } else {
+            throw new Error("Resource Type: " + resourceType + " does not exist. Therefore resource can not change");
         }
     }
 
     private subResourceChange(resourceType: string, subIndex: string, changeType: string, resource: Object) {
+    
         if (this.subPoolExists(resourceType, subIndex)) {
             let pool = this.getSubPool(resourceType, subIndex);
             console.log(pool);
@@ -129,6 +132,8 @@ export default class ResourcePool implements IResourcePool {
             for (let i = 0; i < pool.Pool.length; i++) { 
                 pool.Pool[i].emit(resourceType, resource);
             }
+        } else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
 

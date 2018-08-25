@@ -126,6 +126,7 @@ export default class MySQL implements IDatabase, IQueryable {
         sql = mysql.format(sql, inserts);
         this.Connection.query(sql, (error, row, fields) => {
             if (error) {
+                throw new Error(error.toString());
                 callback(true, null);
             } else {
                 callback(false, row);
@@ -153,14 +154,11 @@ export default class MySQL implements IDatabase, IQueryable {
         let sql = "INSERT INTO ?? (" + colQs.join(", ") + ") VALUES (" + valQs.join(", ") + ")";
         sql = mysql.format(sql, inserts);
 
-        console.log(sql);
-
         this.Connection.query(sql, (error, rows, fields) => {
             if (error) {
-                console.log(error);
+                throw new Error(error.toString());
                 callback(true, null);
             } else {
-                console.log(error, rows, fields);
                 callback(false, model);
             }
         })
