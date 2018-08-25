@@ -7,6 +7,8 @@ export default class Config {
         
         if (typeof config[index] !== 'undefined') {
             return config[index];
+        } else {
+            console.log("Config Param does not exist");
         }
     }
 

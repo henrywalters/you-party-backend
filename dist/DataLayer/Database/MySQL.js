@@ -120,11 +120,14 @@ class MySQL {
         });
         let sql = "INSERT INTO ?? (" + colQs.join(", ") + ") VALUES (" + valQs.join(", ") + ")";
         sql = mysql.format(sql, inserts);
+        console.log(sql);
         this.Connection.query(sql, (error, rows, fields) => {
             if (error) {
+                console.log(error);
                 callback(true, null);
             }
             else {
+                console.log(error, rows, fields);
                 callback(false, model);
             }
         });

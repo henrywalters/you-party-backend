@@ -55,7 +55,7 @@ export default class UserController {
                                     email: email,
                                     password: pass
                                 }, (error, user) => {
-                                    cb(error, user);
+                                    cb("MySQL Failed to commit", user);
                                 })
                             } else {
                                 console.log("BCrypt failed");

@@ -4,6 +4,7 @@ import IResourcePool from "../interface/IResourcePool";
 import VideoSearchController from '../../BusinessLayer/Implementation/VideoSearchController';
 import PlaylistController from '../../BusinessLayer/Implementation/PlaylistController';
 import Auth from "../../AuthLayer/implementation/Auth";
+import { RankTypes } from '../../Helpers/RankHelper';
 
 export default class VideoRoutes implements IResourceRouter {
     route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
@@ -46,7 +47,7 @@ export default class VideoRoutes implements IResourceRouter {
         });
 
         app.get("/party/:partyId/playlist", (req, res) => {
-            playlist.getPlaylist(req.params.partyId, (error, playlist) => {
+            playlist.getSortedPlaylist(req.params.partyId, RankTypes["Wilson Lower Bound"], (error, playlist) => {
                 if (error) {
                     res.json({
                         success: false

@@ -4,6 +4,8 @@ import Party from '../../DataLayer/Domain/Party';
 import PartyGuest from '../../DataLayer/Domain/PartyGuest';
 import IResourcePool from '../../IOLayer/interface/IResourcePool';
 import Vote from '../../DataLayer/Domain/Vote';
+import { RankTypes } from '../../Helpers/RankHelper';
+import RankHelper from '../../Helpers/RankHelper';
 
 export default class PlaylistController {
     private DataSource: IQueryable;
@@ -60,6 +62,13 @@ export default class PlaylistController {
     getPlaylist(partyId: string, cb: {(error: string, playlist: Array<Object>): void}) {
         this._Playlist.getPlaylist(partyId, (error, res) => {
             cb(error, res);
+        })
+    }
+
+    getSortedPlaylist(partyId: string, rankType: RankTypes, cb: {(error: string, playlist: Array<Object>): void}) {
+        this._Playlist.getPlaylist(partyId, (error, playlist) => {
+            playlist = RankHelper.Sort(rankType, playlist);
+            cb(error, playlist);
         })
     }
 

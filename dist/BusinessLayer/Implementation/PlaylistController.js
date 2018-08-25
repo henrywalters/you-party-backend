@@ -4,6 +4,7 @@ const Playlist_1 = require("../../DataLayer/Domain/Playlist");
 const Party_1 = require("../../DataLayer/Domain/Party");
 const PartyGuest_1 = require("../../DataLayer/Domain/PartyGuest");
 const Vote_1 = require("../../DataLayer/Domain/Vote");
+const RankHelper_1 = require("../../Helpers/RankHelper");
 class PlaylistController {
     constructor(ds, resourcePool) {
         this.DataSource = ds;
@@ -26,6 +27,7 @@ class PlaylistController {
             else {
                 this._Playlist.getWhere({ videoId: videoId, partyId: partyId, status: "queued" }, (error, videos) => {
                     if (videos.length > 0) {
+                        console.log(videos);
                         cb("Video already in playlist", null);
                     }
                     else {
@@ -50,6 +52,12 @@ class PlaylistController {
     getPlaylist(partyId, cb) {
         this._Playlist.getPlaylist(partyId, (error, res) => {
             cb(error, res);
+        });
+    }
+    getSortedPlaylist(partyId, rankType, cb) {
+        this._Playlist.getPlaylist(partyId, (error, playlist) => {
+            playlist = RankHelper_1.default.Sort(rankType, playlist);
+            cb(error, playlist);
         });
     }
     vote(guestId, playlistId, type, cb) {

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const VideoSearchController_1 = require("../../BusinessLayer/Implementation/VideoSearchController");
 const PlaylistController_1 = require("../../BusinessLayer/Implementation/PlaylistController");
 const Auth_1 = require("../../AuthLayer/implementation/Auth");
+const RankHelper_1 = require("../../Helpers/RankHelper");
 class VideoRoutes {
     route(app, socket, ds, pool) {
         let videoSearch = new VideoSearchController_1.default(ds);
@@ -43,7 +44,7 @@ class VideoRoutes {
             });
         });
         app.get("/party/:partyId/playlist", (req, res) => {
-            playlist.getPlaylist(req.params.partyId, (error, playlist) => {
+            playlist.getSortedPlaylist(req.params.partyId, RankHelper_1.RankTypes["Wilson Lower Bound"], (error, playlist) => {
                 if (error) {
                     res.json({
                         success: false
