@@ -38,7 +38,9 @@ class PlaylistController {
                             status: "queued"
                         }, (error, video) => {
                             if (!error) {
+                                console.log("Successfully added, searching video in palylist");
                                 this._Playlist.getPlaylistVideo(partyId, videoId, (error, video) => {
+                                    console.log(video);
                                     this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video);
                                     cb(null, video);
                                 });
