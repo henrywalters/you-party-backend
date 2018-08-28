@@ -11,6 +11,8 @@ import * as Emitter from 'central-event';
 import IResourcePool from './IOLayer/interface/IResourcePool';
 import * as Cors from 'cors';
 import Party from './DataLayer/Domain/Party';
+import Playlist from './DataLayer/Domain/Playlist';
+import { RankTypes } from './Helpers/RankHelper';
 
 class App {
   	public express;
@@ -33,17 +35,17 @@ class App {
 
 		let partyObject = new Party();
 		partyObject.setDataSource(this.DataSource);
-		
+		let playlistObject = new Playlist();
+		playlistObject.setDataSource(this.DataSource);
+
 		partyObject.getAll((error, parties) => {
 			console.log("Got Parties");
-			parties.map(party => {
-				console.log(partyObject);
-
-				resourcepool.createPool("Party-" + party['id']);
-				resourcepool.createSubPool("Party-" + party['id'], "Playlist");
-				resourcepool.createSubPool("Party-" + party['id'], "Votes");
-
-				console.log("Initializing pool for party: " + party['name']);
+			parties.map(party => {				
+				playlistObject.getPlaylist(party['id'], (error, playlist) => {
+					resourcepool.createPool("Party-" + party['id']);
+					resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankTypes["Wilson Lower Bound"], playlist);
+					resourcepool.createSubPool("Party-" + party['id'], "Votes");
+				})	
 			})
 		})
 		

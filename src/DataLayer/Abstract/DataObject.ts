@@ -70,7 +70,6 @@ export default abstract class DataObject implements IDataObject {
     }
 
     query(query: string, cb: {(error: boolean, res: any): void}) {
-        console.log("Middle query", query);
         this.DataSource.query(query, (error, res) => {cb(error, res)});
     }
 
@@ -91,9 +90,7 @@ export default abstract class DataObject implements IDataObject {
     }
 
     create(model: Object, callback: {(error: boolean, res: Object):void}): void {
-        console.log("Creating Object");
         if (this.isValidObject(model)) {
-            console.log("Valid Object");
             this.DataSource.create(this.Table, model, (error, res) => {
                 if (this.ResourcePool !== null) {
                     this.ResourcePool.createResource(this.ResourceType, res);

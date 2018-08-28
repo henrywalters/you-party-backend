@@ -11,6 +11,7 @@ import VideoSearchController from './BusinessLayer/Implementation/VideoSearchCon
 import VideoRoutes from './IOLayer/implementation/VideoRoutes';
 import Config from './Helpers/ConfigHelper';
 import PlaylistRoutes from './IOLayer/implementation/PlaylistRoutes';
+import RankHelper, { RankTypes } from './Helpers/RankHelper';
 
 
 

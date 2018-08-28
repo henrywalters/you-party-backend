@@ -39,7 +39,7 @@ class PlaylistController {
                         }, (error, video) => {
                             if (!error) {
                                 this._Playlist.getPlaylistVideo(partyId, videoId, (error, video) => {
-                                    this.ResourcePool.createSubResource("Party-" + partyId, "Playlist", video);
+                                    this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video);
                                     cb(null, video);
                                 });
                             }

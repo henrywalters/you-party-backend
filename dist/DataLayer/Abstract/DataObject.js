@@ -55,7 +55,6 @@ class DataObject {
         return valid;
     }
     query(query, cb) {
-        console.log("Middle query", query);
         this.DataSource.query(query, (error, res) => { cb(error, res); });
     }
     get(index, callback) {
@@ -72,9 +71,7 @@ class DataObject {
         this.DataSource.getAll(this.Table, (error, res) => { callback(error, res); });
     }
     create(model, callback) {
-        console.log("Creating Object");
         if (this.isValidObject(model)) {
-            console.log("Valid Object");
             this.DataSource.create(this.Table, model, (error, res) => {
                 if (this.ResourcePool !== null) {
                     this.ResourcePool.createResource(this.ResourceType, res);

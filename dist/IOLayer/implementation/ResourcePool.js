@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const RankHelper_1 = require("../../Helpers/RankHelper");
+const RankHelper_2 = require("../../Helpers/RankHelper");
 class ResourcePool {
     constructor(resourceTypes) {
         this.Pools = {};
-        console.log(resourceTypes);
         this.ResourceTypes = resourceTypes;
         for (let i = 0; i < this.ResourceTypes.length; i++) {
             if (!this.poolExists(this.ResourceTypes[i])) {
                 this.Pools[this.ResourceTypes[i]] = {
                     Type: this.ResourceTypes[i],
                     Pool: [],
-                    SubPools: {}
+                    SubPools: {},
+                    SubListPools: {}
                 };
-                console.log(this.ResourceTypes[i]);
-                console.log(this.Pools[this.ResourceTypes[i]]);
             }
         }
     }
@@ -27,9 +27,15 @@ class ResourcePool {
     }
     subPoolExists(resourceType, subIndex) {
         if (this.poolExists(resourceType)) {
-            console.log("Pool Exists");
             if (typeof this.Pools[resourceType].SubPools[subIndex] !== 'undefined') {
-                console.log("Sub Pool Exists");
+                return true;
+            }
+        }
+        return false;
+    }
+    subListPoolExists(resourceType, subIndex) {
+        if (this.poolExists(resourceType)) {
+            if (typeof this.Pools[resourceType].SubListPools[subIndex] !== 'undefined') {
                 return true;
             }
         }
@@ -41,12 +47,16 @@ class ResourcePool {
     getSubPool(resourceType, subIndex) {
         return this.Pools[resourceType].SubPools[subIndex];
     }
+    getSubListPool(resourceType, subIndex) {
+        return this.Pools[resourceType].SubListPools[subIndex];
+    }
     createPool(resourceType) {
         if (!this.poolExists(resourceType)) {
             this.Pools[resourceType] = {
                 Type: resourceType,
                 Pool: [],
-                SubPools: {}
+                SubPools: {},
+                SubListPools: {}
             };
             console.log("Creating Pool: " + resourceType);
         }
@@ -67,6 +77,21 @@ class ResourcePool {
         }
     }
     joinPool(resourceType, socket) {
+        let pool = this.getPool(resourceType);
+        pool.Pool.push(socket);
+        console.log(this.Pools[resourceType].Pool.length + " Members in Resource Pool: " + resourceType);
+    }
+    createSubListPool(resourceType, subIndex, rankType, initialList = []) {
+        if (!this.getSubListPool(resourceType, subIndex)) {
+            this.Pools[resourceType].SubListPools[subIndex] = {
+                SubIndex: subIndex,
+                Pool: [],
+                List: RankHelper_2.default.Sort(RankHelper_1.RankTypes["Wilson Lower Bound"], initialList)
+            };
+            console.log("Created Pool: " + resourceType + " sub: " + subIndex);
+        }
+    }
+    joinSubListPool(resourceType, subIndex, socket) {
         let pool = this.getPool(resourceType);
         pool.Pool.push(socket);
         console.log(this.Pools[resourceType].Pool.length + " Members in Resource Pool: " + resourceType);
@@ -99,6 +124,21 @@ class ResourcePool {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
+    subListResourceChange(resourceType, subIndex, changeType, index, resource) {
+        if (this.subListPoolExists(resourceType, subIndex)) {
+            let pool = this.getSubListPool(resourceType, subIndex);
+            resource["changeType"] = changeType;
+            resource['subIndex'] = subIndex;
+            resource['index'] = index;
+            for (let i = 0; i < pool.Pool.length; i++) {
+                pool.Pool[i].emit(resourceType, resource);
+            }
+            console.log("Pool List now: ", pool.List);
+        }
+        else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
+        }
+    }
     createResource(resourceType, resource) {
         this.resourceChange(resourceType, "create", resource);
     }
@@ -116,6 +156,37 @@ class ResourcePool {
     }
     destroySubResource(resourceType, subIndex, resource) {
         this.subResourceChange(resourceType, subIndex, "destroy", resource);
+    }
+    insertSubListResource(resourceType, subIndex, resource) {
+        if (this.subListPoolExists(resourceType, subIndex)) {
+            let pool = this.getSubListPool(resourceType, subIndex);
+            let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
+            pool.List.splice(index, 0, resource);
+            this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+        }
+        else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
+        }
+    }
+    removeSubListResource(resourceType, subIndex, index) {
+        if (this.subListPoolExists(resourceType, subIndex)) {
+            let pool = this.getSubListPool(resourceType, subIndex);
+            pool.List.splice(index, 1);
+        }
+        else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
+        }
+    }
+    swapSubListResource(resourceType, subIndex, index) {
+        if (this.subListPoolExists(resourceType, subIndex)) {
+            let pool = this.getSubListPool(resourceType, subIndex);
+            let resource = pool.List[index];
+            this.removeSubListResource(resourceType, subIndex, index);
+            this.insertSubListResource(resourceType, subIndex, resource);
+        }
+        else {
+            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
+        }
     }
 }
 exports.default = ResourcePool;

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const RandomHelper_1 = require("../../Helpers/RandomHelper");
 const Party_1 = require("../../DataLayer/Domain/Party");
 const PartyGuest_1 = require("../../DataLayer/Domain/PartyGuest");
+const RankHelper_1 = require("../../Helpers/RankHelper");
 class PartyController {
     constructor(ds, pool) {
         this.DataSource = ds;
@@ -22,7 +23,7 @@ class PartyController {
             cb(error, party);
             if (!error) {
                 this._Party.ResourcePool.createPool("Party-" + party['id']);
-                this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Playlist");
+                this._Party.ResourcePool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], []);
                 this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Votes");
             }
         });

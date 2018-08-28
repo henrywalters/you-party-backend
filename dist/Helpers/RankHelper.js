@@ -18,10 +18,7 @@ class RankHelper {
         let a = phat + ((z * z) / (2 * n));
         let b = z * Math.sqrt(((phat * (1 - phat)) + (z * z) / (4 * n)) / n);
         let c = (1 + (z * z) / n);
-        console.log(a);
-        console.log(b);
         let lb = (a - b) / c;
-        console.log("WILSON LOWER BOUND: " + lb);
         return lb;
     }
     static Delta(upvotes, downvotes) {
@@ -38,13 +35,89 @@ class RankHelper {
             aScore = this.Delta(a.upvotes, a.downvotes);
             bScore = this.Delta(b.upvotes, b.downvotes);
         }
-        return bScore - aScore;
+        let delta = bScore - aScore;
+        if (delta === 0) {
+            return Date.parse(b.timeAdded) - Date.parse(a.timeAdded);
+        }
+        else {
+            return delta;
+        }
     }
     static Sort(type, list) {
         return list.sort((a, b) => {
-            console.log(a, b);
             return this.Rank(type, a, b);
         });
+    }
+    static BinarySearch(type, list, item) {
+        var low = 0;
+        var midpoint = 0;
+        var high = list.length;
+        if (list.length === 0) {
+            return 0;
+        }
+        if (list.length === 1) {
+            let rank = this.Rank(type, list[0], item);
+            console.log(rank);
+            if (rank > 0) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        while (low < high) {
+            if (high - low === 1) {
+                let rank = this.Rank(type, list[low], item);
+                if (rank > 0) {
+                    rank = this.Rank(type, list[high], item);
+                    if (rank > 0) {
+                        return low + 2;
+                    }
+                    else {
+                        return low + 1;
+                    }
+                }
+                else {
+                    return low;
+                }
+            }
+            midpoint = ((high - low) % 2 === 0) ? (high + low) / 2.0 : ((high + low) - 1) / 2;
+            console.log(low, high, midpoint);
+            let rank = this.Rank(type, list[midpoint], item);
+            if (rank > 0) {
+                low = midpoint;
+            }
+            else if (rank < 0) {
+                high = midpoint;
+            }
+            else {
+                return midpoint;
+            }
+        }
+        return midpoint;
+    }
+    static LinearSearch(type, list, item) {
+        if (list.length === 0) {
+            return 0;
+        }
+        if (list.length === 1) {
+            let rank = this.Rank(type, list[0], item);
+            console.log(rank);
+            if (rank > 0) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        let count = 0;
+        while (this.Rank(type, list[count], item) > 0) {
+            count++;
+        }
+        return count;
+    }
+    static FindPosition(type, item, list) {
+        return 0;
     }
 }
 exports.default = RankHelper;

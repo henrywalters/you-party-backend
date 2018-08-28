@@ -5,6 +5,8 @@ const BodyParser = require("body-parser");
 const SocketIO = require("socket.io");
 const http_1 = require("http");
 const Party_1 = require("./DataLayer/Domain/Party");
+const Playlist_1 = require("./DataLayer/Domain/Playlist");
+const RankHelper_1 = require("./Helpers/RankHelper");
 class App {
     constructor(datasource, resourcepool, routes) {
         this.express = express();
@@ -16,14 +18,16 @@ class App {
         //without doing this, an error will be thrown. This is intentional. 
         let partyObject = new Party_1.default();
         partyObject.setDataSource(this.DataSource);
+        let playlistObject = new Playlist_1.default();
+        playlistObject.setDataSource(this.DataSource);
         partyObject.getAll((error, parties) => {
             console.log("Got Parties");
             parties.map(party => {
-                console.log(partyObject);
-                resourcepool.createPool("Party-" + party['id']);
-                resourcepool.createSubPool("Party-" + party['id'], "Playlist");
-                resourcepool.createSubPool("Party-" + party['id'], "Votes");
-                console.log("Initializing pool for party: " + party['name']);
+                playlistObject.getPlaylist(party['id'], (error, playlist) => {
+                    resourcepool.createPool("Party-" + party['id']);
+                    resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], playlist);
+                    resourcepool.createSubPool("Party-" + party['id'], "Votes");
+                });
             });
         });
         //initialize socket server

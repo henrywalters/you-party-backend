@@ -4,6 +4,7 @@ import IQueryable from '../../DataLayer/Interface/IQueryable';
 import Party from '../../DataLayer/Domain/Party';
 import IResourcePool from "../../IOLayer/interface/IResourcePool";
 import PartyGuest from "../../DataLayer/Domain/PartyGuest";
+import { RankTypes } from "../../Helpers/RankHelper";
 
 export default class PartyController implements IPartyController {
 
@@ -30,7 +31,7 @@ export default class PartyController implements IPartyController {
             cb(error, party);
             if (!error) {
                 this._Party.ResourcePool.createPool("Party-" + party['id']);
-                this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Playlist");
+                this._Party.ResourcePool.createSubListPool("Party-" + party['id'], "Playlist", RankTypes["Wilson Lower Bound"], []);
                 this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Votes");
             }
         })
