@@ -108,7 +108,11 @@ export default class PlaylistController {
                                             type: type
                                         })
 
-                                        cb(null, vote);
+                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                            console.log(video);
+                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                            cb(null, video);
+                                        })
                                     }
                                 })
                             } else { 
@@ -123,12 +127,18 @@ export default class PlaylistController {
 
                                 if (vote['type'] === type) {
                                     this._Vote.destroy(vote['id'], (success) => {
-                                        cb(null, null);
+                                        
                                         this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
                                             id: vote['id'], 
                                             guestId: guestId,
                                             playlistId: playlistId,
                                             type: type
+                                        })
+
+                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                            console.log(video);
+                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                            cb(null, video);
                                         })
                                     })
                                 } else {
@@ -144,7 +154,12 @@ export default class PlaylistController {
                                                 playlistId: playlistId,
                                                 type: newType
                                             })
-                                            cb(null, vote);
+
+                                            this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                                console.log(video);
+                                                this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                cb(null, video);
+                                            })
                                         }
                                     })
                                 }

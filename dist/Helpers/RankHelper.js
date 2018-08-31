@@ -56,8 +56,10 @@ class RankHelper {
             return 0;
         }
         if (list.length === 1) {
+            if (list[0].id === item.id) {
+                return 0;
+            }
             let rank = this.Rank(type, list[0], item);
-            console.log(rank);
             if (rank > 0) {
                 return 1;
             }
@@ -67,6 +69,12 @@ class RankHelper {
         }
         while (low < high) {
             if (high - low === 1) {
+                if (list[low].id === item.id) {
+                    return low;
+                }
+                if (list[high].id === item.id) {
+                    return high;
+                }
                 let rank = this.Rank(type, list[low], item);
                 if (rank > 0) {
                     rank = this.Rank(type, list[high], item);
@@ -82,8 +90,10 @@ class RankHelper {
                 }
             }
             midpoint = ((high - low) % 2 === 0) ? (high + low) / 2.0 : ((high + low) - 1) / 2;
-            console.log(low, high, midpoint);
             let rank = this.Rank(type, list[midpoint], item);
+            if (list[midpoint] === item) {
+                return midpoint;
+            }
             if (rank > 0) {
                 low = midpoint;
             }
@@ -102,7 +112,6 @@ class RankHelper {
         }
         if (list.length === 1) {
             let rank = this.Rank(type, list[0], item);
-            console.log(rank);
             if (rank > 0) {
                 return 1;
             }

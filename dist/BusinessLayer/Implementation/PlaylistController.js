@@ -96,7 +96,11 @@ class PlaylistController {
                                             playlistId: playlistId,
                                             type: type
                                         });
-                                        cb(null, vote);
+                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                            console.log(video);
+                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                            cb(null, video);
+                                        });
                                     }
                                 });
                             }
@@ -110,12 +114,16 @@ class PlaylistController {
                                 let vote = votes[0];
                                 if (vote['type'] === type) {
                                     this._Vote.destroy(vote['id'], (success) => {
-                                        cb(null, null);
                                         this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
                                             id: vote['id'],
                                             guestId: guestId,
                                             playlistId: playlistId,
                                             type: type
+                                        });
+                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                            console.log(video);
+                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                            cb(null, video);
                                         });
                                     });
                                 }
@@ -133,7 +141,11 @@ class PlaylistController {
                                                 playlistId: playlistId,
                                                 type: newType
                                             });
-                                            cb(null, vote);
+                                            this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                                console.log(video);
+                                                this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                cb(null, video);
+                                            });
                                         }
                                     });
                                 }

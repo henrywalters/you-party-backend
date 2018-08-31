@@ -35,6 +35,7 @@ class ResourcePool {
     }
     subListPoolExists(resourceType, subIndex) {
         if (this.poolExists(resourceType)) {
+            console.log(this.Pools[resourceType]);
             if (typeof this.Pools[resourceType].SubListPools[subIndex] !== 'undefined') {
                 return true;
             }
@@ -89,6 +90,7 @@ class ResourcePool {
                 List: RankHelper_2.default.Sort(RankHelper_1.RankTypes["Wilson Lower Bound"], initialList)
             };
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
+            console.log(this.Pools[resourceType].SubListPools[subIndex]);
         }
     }
     joinSubListPool(resourceType, subIndex, socket) {
@@ -168,20 +170,20 @@ class ResourcePool {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
-    removeSubListResource(resourceType, subIndex, index) {
+    removeSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
+            let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
-    swapSubListResource(resourceType, subIndex, index) {
+    swapSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            let resource = pool.List[index];
-            this.removeSubListResource(resourceType, subIndex, index);
+            this.removeSubListResource(resourceType, subIndex, resource);
             this.insertSubListResource(resourceType, subIndex, resource);
         }
         else {

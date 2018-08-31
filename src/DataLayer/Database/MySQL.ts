@@ -70,7 +70,7 @@ export default class MySQL implements IDatabase, IQueryable {
     query(querystring: string, cb: {(error: boolean, result: any): void}) {
         this.Connection.query(querystring, (err, row, fields) => {
             if (err) {
-                console.log(err);
+                throw new Error(err.toString());
                 cb(true, null);
             } else {
                 cb(false, row);

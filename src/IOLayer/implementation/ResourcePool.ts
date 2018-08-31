@@ -74,6 +74,7 @@ export default class ResourcePool implements IResourcePool {
 
     private subListPoolExists(resourceType: string, subIndex: string) : boolean {
         if (this.poolExists(resourceType)) {
+            console.log(this.Pools[resourceType]);
             if (typeof this.Pools[resourceType].SubListPools[subIndex] !== 'undefined') {
                 return true;
             }
@@ -139,6 +140,7 @@ export default class ResourcePool implements IResourcePool {
             }
 
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
+            console.log(this.Pools[resourceType].SubListPools[subIndex]);
         }
     }
 
@@ -232,20 +234,20 @@ export default class ResourcePool implements IResourcePool {
         }
     }
 
-    removeSubListResource<T extends ISortable>(resourceType: string, subIndex: string, index: number): void {
+    removeSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
+            let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
 
-    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, index: number): void {
+    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            let resource = pool.List[index];
-            this.removeSubListResource(resourceType, subIndex, index);
+            this.removeSubListResource(resourceType, subIndex, resource);
             this.insertSubListResource(resourceType, subIndex, resource);
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
