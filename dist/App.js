@@ -41,6 +41,9 @@ class App {
             socket.on('join-sub-resource', (resource) => {
                 this.ResourcePool.joinSubPool(resource.resource, resource.subIndex, socket);
             });
+            socket.on('join-sub-list-resource', (resource) => {
+                this.ResourcePool.joinSubListPool(resource.resource, resource.subIndex, socket);
+            });
         });
         this.mountRoutes(routes);
         setInterval(() => {
