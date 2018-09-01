@@ -7,6 +7,7 @@ const http_1 = require("http");
 const Party_1 = require("./DataLayer/Domain/Party");
 const Playlist_1 = require("./DataLayer/Domain/Playlist");
 const RankHelper_1 = require("./Helpers/RankHelper");
+const PlaylistController_1 = require("./BusinessLayer/Implementation/PlaylistController");
 class App {
     constructor(datasource, resourcepool, routes) {
         this.express = express();
@@ -20,12 +21,25 @@ class App {
         partyObject.setDataSource(this.DataSource);
         let playlistObject = new Playlist_1.default();
         playlistObject.setDataSource(this.DataSource);
+        let playlistController = new PlaylistController_1.default(this.DataSource, this.ResourcePool);
         partyObject.getAll((error, parties) => {
             console.log("Got Parties");
             parties.map(party => {
-                playlistObject.getPlaylist(party['id'], (error, playlist) => {
+                playlistController.getSortedPlaylist(party['id'], RankHelper_1.RankTypes["Wilson Lower Bound"], (error, playlist) => {
+                    let sortablePlaylist = playlist.map(video => {
+                        return {
+                            id: video['id'],
+                            upvotes: video['upvotes'],
+                            downvotes: video['downvotes'],
+                            timeAdded: video['timeAdded'],
+                            title: video['title'],
+                            videoId: video['videoId'],
+                            descriptino: video['description'],
+                            videoKey: video['videoKey']
+                        };
+                    });
                     resourcepool.createPool("Party-" + party['id']);
-                    resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], playlist);
+                    resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], sortablePlaylist);
                     resourcepool.createSubPool("Party-" + party['id'], "Votes");
                 });
             });

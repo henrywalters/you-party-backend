@@ -162,6 +162,12 @@ class ResourcePool {
     insertSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
+            console.log("About to rank: ");
+            console.log(resource);
+            console.log("against:");
+            pool.List.map(item => {
+                console.log(item);
+            });
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 0, resource);
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
@@ -173,6 +179,12 @@ class ResourcePool {
     removeSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
+            console.log("About to rank: ");
+            console.log(resource);
+            console.log("against:");
+            pool.List.map(item => {
+                console.log(item);
+            });
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
         }
@@ -184,7 +196,10 @@ class ResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             this.removeSubListResource(resourceType, subIndex, resource);
-            this.insertSubListResource(resourceType, subIndex, resource);
+            console.log("Removed resource");
+            console.log("\n\n\n\n\n\n\n");
+            //this.insertSubListResource(resourceType, subIndex, resource);
+            console.log("Added Resource");
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");

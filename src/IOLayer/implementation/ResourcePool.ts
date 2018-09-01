@@ -223,7 +223,12 @@ export default class ResourcePool implements IResourcePool {
     insertSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-
+            console.log("About to rank: ");
+            console.log(resource);
+            console.log("against:");
+            pool.List.map(item => {
+                console.log(item);
+            })
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
 
             pool.List.splice(index, 0, resource);
@@ -237,6 +242,12 @@ export default class ResourcePool implements IResourcePool {
     removeSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
+            console.log("About to rank: ");
+            console.log(resource);
+            console.log("against:");
+            pool.List.map(item => {
+                console.log(item);
+            })
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
         } else {
@@ -248,7 +259,10 @@ export default class ResourcePool implements IResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             this.removeSubListResource(resourceType, subIndex, resource);
-            this.insertSubListResource(resourceType, subIndex, resource);
+            console.log("Removed resource");
+            console.log("\n\n\n\n\n\n\n");
+            //this.insertSubListResource(resourceType, subIndex, resource);
+            console.log("Added Resource");
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }

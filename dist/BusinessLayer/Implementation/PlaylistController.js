@@ -99,9 +99,14 @@ class PlaylistController {
                                         });
                                         console.log(playlistId);
                                         this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
-                                            console.log(video);
-                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
-                                            cb(null, video);
+                                            console.log(error, video);
+                                            if (!error) {
+                                                this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                cb(null, video);
+                                            }
+                                            else {
+                                                cb("Video not found", null);
+                                            }
                                         });
                                     }
                                 });
@@ -124,8 +129,13 @@ class PlaylistController {
                                         });
                                         this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
                                             console.log(video);
-                                            this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
-                                            cb(null, video);
+                                            if (!error) {
+                                                this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                cb(null, video);
+                                            }
+                                            else {
+                                                cb("Video not found", null);
+                                            }
                                         });
                                     });
                                 }
@@ -144,9 +154,14 @@ class PlaylistController {
                                                 type: newType
                                             });
                                             this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
-                                                console.log(video);
-                                                this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
-                                                cb(null, video);
+                                                console.log(error, video);
+                                                if (!error) {
+                                                    this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                    cb(null, video);
+                                                }
+                                                else {
+                                                    cb("Video not found", null);
+                                                }
                                             });
                                         }
                                     });
