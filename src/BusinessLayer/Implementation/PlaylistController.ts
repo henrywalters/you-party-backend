@@ -81,7 +81,7 @@ export default class PlaylistController {
 
         let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
+        
 
         let guests = await this._Guest.getWhereAsync({guestId: guestId});
 
@@ -106,6 +106,8 @@ export default class PlaylistController {
             playlistId: playlistId,
             type: type
         });
+
+        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
 
         video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 

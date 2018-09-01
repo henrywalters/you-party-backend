@@ -74,7 +74,6 @@ class PlaylistController {
         return __awaiter(this, void 0, void 0, function* () {
             const freeVoteTest = true;
             let video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
-            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
             let guests = yield this._Guest.getWhereAsync({ guestId: guestId });
             if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
                 throw new Error("Guest does not exist/is not in party");
@@ -92,6 +91,7 @@ class PlaylistController {
                 playlistId: playlistId,
                 type: type
             });
+            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
             video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
             let rankedVideo = this.ResourcePool.insertSubListResource("Party-" + video['partyId'], "Playlist", video);
             console.log(video);
