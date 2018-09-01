@@ -104,7 +104,7 @@ export default class PlaylistController {
             playlistId: playlistId,
             type: type
         });
-
+ 
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
         this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);   
