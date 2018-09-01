@@ -54,7 +54,7 @@ export default class RankHelper {
         let delta = bScore - aScore;
         //console.log(b, a, bScore, aScore, delta);
         if (delta === 0) {
-            return Date.parse(b.timeAdded) - Date.parse(a.timeAdded);
+            return Date.parse(a.timeAdded) - Date.parse(b.timeAdded);
         } else {
             return delta;
         }
