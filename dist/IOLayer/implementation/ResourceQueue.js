@@ -22,6 +22,7 @@ class ResourceQueue {
             itemArr.map(item => {
                 item.execute();
             });
+            console.log("QUEUE SIZE: " + this.Queue.length);
             this.handleQueue();
         }
     }

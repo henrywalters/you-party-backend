@@ -29,7 +29,7 @@ export default class ResourceQueue<T extends IExecutable> {
             itemArr.map(item => {
                 item.execute();
             })
-
+            console.log("QUEUE SIZE: " + this.Queue.length);
             this.handleQueue();
         }
     }
