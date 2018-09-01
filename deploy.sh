@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 echo "Command: $1" 
 if [ "$1" != "" ]; then 
+    echo "Compiling...."
+    tsc
     echo "Deploying to github & heroku with commit message: "
     echo $1
     echo "Staging for commit"
