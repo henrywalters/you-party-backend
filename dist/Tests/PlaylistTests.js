@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const PlaylistController_1 = require("../BusinessLayer/Implementation/PlaylistController");
 const Playlist_1 = require("../DataLayer/Domain/Playlist");
 function randomInt(n) {
-    return Math.floor(Math.random() * 100);
+    return Math.floor(Math.random() * n);
 }
 class PlaylistTests {
     constructor(ds, rp) {
@@ -24,9 +24,13 @@ class PlaylistTests {
     randomVotes(partyId, guestId, quantity) {
         return __awaiter(this, void 0, void 0, function* () {
             let playlist = yield this.PlaylistObject.getPlaylistAsync(partyId);
+            console.log(playlist);
             let n = playlist.length;
+            console.log("Playlist Length: " + n);
             for (let i = 0; i < quantity; i++) {
                 let r1 = randomInt(n);
+                console.log("index: " + r1);
+                console.log(playlist[r1]);
                 let r2 = (randomInt(2) === 0) ? "up" : "down";
                 let vote = this.PlaylistController.voteAsync(guestId, playlist[r1].id, r2);
                 console.log(i + " out of " + quantity);

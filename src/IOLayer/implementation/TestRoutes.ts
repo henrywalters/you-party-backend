@@ -12,6 +12,8 @@ export default class TestRoutes implements IResourceRouter {
             auth.validateHeader(req,res);
             let user = auth.getSelf(req);
 
+            console.log(req.params.partyId, user['id'], req.params.quantity);
+
             let playlistTests = new PlaylistTests(ds, pool);
 
             playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity).then(res.json({status: "complete"}));

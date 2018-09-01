@@ -8,6 +8,7 @@ class TestRoutes {
         app.get("/test/party/:partyId/random-votes/:quantity", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
+            console.log(req.params.partyId, user['id'], req.params.quantity);
             let playlistTests = new PlaylistTests_1.default(ds, pool);
             playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity).then(res.json({ status: "complete" }));
         });

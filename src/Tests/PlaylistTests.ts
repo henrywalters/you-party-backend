@@ -6,7 +6,7 @@ import Playlist from '../DataLayer/Domain/Playlist';
 
 
 function randomInt(n: number): number {
-    return Math.floor(Math.random() * 100); 
+    return Math.floor(Math.random() * n); 
 }
 
 export default class PlaylistTests {
@@ -26,10 +26,14 @@ export default class PlaylistTests {
 
     async randomVotes(partyId: string, guestId: string, quantity: number): Promise<void> {
         let playlist = await this.PlaylistObject.getPlaylistAsync(partyId);
+        console.log(playlist);
         let n = playlist.length;
+        console.log("Playlist Length: " + n);
 
         for (let i = 0; i < quantity; i++) {
             let r1 = randomInt(n);
+            console.log("index: " + r1);
+            console.log(playlist[r1]);
             let r2 = (randomInt(2) === 0) ? "up" : "down";
             let vote = this.PlaylistController.voteAsync(guestId, playlist[r1].id, r2);
             console.log(i + " out of " + quantity);
