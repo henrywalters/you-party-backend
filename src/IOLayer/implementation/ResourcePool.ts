@@ -146,7 +146,7 @@ export default class ResourcePool implements IResourcePool {
     joinSubListPool<T extends ISortable>(resourceType: string, subIndex: string, socket: SocketIO.Socket): void {
         let pool = this.getPool(resourceType);
         pool.Pool.push(socket);
-        console.log(this.Pools[resourceType].Pool.length + " Members in Sub List Resource Pool: " + resourceType);
+        console.log(this.Pools[resourceType].Pool.length + " Members in Sub List Resource Pool: " + resourceType + " - " + subIndex);
     }
 
     private resourceChange(resourceType: string, changeType: string, resource: Object) {
@@ -180,12 +180,13 @@ export default class ResourcePool implements IResourcePool {
 
     private subListResourceChange<T>(resourceType: string, subIndex: string, changeType: string, index: number, resource: Object): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
+            
             let pool = this.getSubListPool(resourceType, subIndex);
             resource["changeType"] = changeType;
             resource['subIndex'] = subIndex;
             resource['index'] = index;
 
-            console.log("SHOULD BE EMITTING: " + resourceType);
+            console.log("SHOULD BE EMITTING: " + resourceType + " sub index: " + subIndex);
 
             console.log(pool.Pool.length + " members in channel");
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 echo "Command: $1" 
+
 if [ "$1" != "" ]; then 
     echo "Compiling...."
     tsc
@@ -15,6 +16,11 @@ if [ "$1" != "" ]; then
         echo "Pushing to Heroku"
         git push heroku master
         echo "Success"
+
+        if [ "$2" == "-l" ]; then
+            echo "Beginning Heroku Logs"
+            heroku logs --tail
+        fi
     else
         echo "No changes detected. Ending Process";
     fi
