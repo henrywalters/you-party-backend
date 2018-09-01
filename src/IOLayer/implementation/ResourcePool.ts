@@ -74,7 +74,6 @@ export default class ResourcePool implements IResourcePool {
 
     private subListPoolExists(resourceType: string, subIndex: string) : boolean {
         if (this.poolExists(resourceType)) {
-            console.log(this.Pools[resourceType]);
             if (typeof this.Pools[resourceType].SubListPools[subIndex] !== 'undefined') {
                 return true;
             }
