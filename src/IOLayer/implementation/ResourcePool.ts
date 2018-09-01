@@ -243,6 +243,7 @@ export default class ResourcePool implements IResourcePool {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
+            this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
