@@ -99,18 +99,18 @@ export default class PlaylistController {
             })
         }
 
-        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
-        
         let vote = await this._Vote.createAsync({
             guestId: guestId,
             playlistId: playlistId,
             type: type
         });
 
-        video = await this._Playlist.getPlaylistVideoAsync(playlistId);
+        let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        let rankedVideo = this.ResourcePool.insertSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
-        console.log(video);
+        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);   
+
+        let rankedVideo = this.ResourcePool.insertSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", modifiedVideo);
+
         return new Promise<Object> (respond => {
             respond(rankedVideo);
         })
