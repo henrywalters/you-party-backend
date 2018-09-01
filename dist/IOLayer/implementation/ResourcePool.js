@@ -167,6 +167,7 @@ class ResourcePool {
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 0, resource);
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+            return pool.List[index];
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
@@ -178,6 +179,7 @@ class ResourcePool {
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
             this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+            return;
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
@@ -187,7 +189,7 @@ class ResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             this.removeSubListResource(resourceType, subIndex, resource);
-            this.insertSubListResource(resourceType, subIndex, resource);
+            return this.insertSubListResource(resourceType, subIndex, resource);
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");

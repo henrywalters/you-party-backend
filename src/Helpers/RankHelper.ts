@@ -52,7 +52,7 @@ export default class RankHelper {
         }
 
         let delta = bScore - aScore;
-
+        //console.log(b, a, bScore, aScore, delta);
         if (delta === 0) {
             return Date.parse(b.timeAdded) - Date.parse(a.timeAdded);
         } else {
@@ -70,7 +70,7 @@ export default class RankHelper {
         
         var low = 0; 
         var midpoint = 0;
-        var high = list.length;
+        var high = list.length - 1;
 
         if (list.length === 0) {
             return 0;
@@ -83,7 +83,7 @@ export default class RankHelper {
             }
 
             let rank = this.Rank(type, list[0], item);
-            if (rank > 0) {
+            if (rank < 0) {
                 return 1;
             } else {
                 return 0;
@@ -105,9 +105,9 @@ export default class RankHelper {
                 }
 
                 let rank = this.Rank(type, list[low], item);
-                if (rank > 0) {
+                if (rank < 0) {
                     rank = this.Rank(type, list[high], item);
-                    if (rank > 0) {
+                    if (rank < 0) {
                         return low + 2;
                     } else {
                         return low + 1;
@@ -131,9 +131,9 @@ export default class RankHelper {
 
             console.log("Rank: " + rank);
 
-            if (rank > 0) {
+            if (rank < 0) {
                 low = midpoint;
-            } else if (rank < 0) {
+            } else if (rank > 0) {
                 high = midpoint;
             } else {
                 return midpoint;
