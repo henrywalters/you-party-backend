@@ -7,6 +7,7 @@ class ResourceQueue {
     }
     addToQueue(item) {
         this.Queue.push(item);
+        console.log("QUEUE SIZE: " + this.Queue.length);
         if (!this.running) {
             this.handleQueue();
         }

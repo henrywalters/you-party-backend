@@ -12,6 +12,7 @@ export default class ResourceQueue<T extends IExecutable> {
 
     public addToQueue(item: Array<T>): void {
         this.Queue.push(item);
+        console.log("QUEUE SIZE: " + this.Queue.length);
         if (!this.running) {
             this.handleQueue();
         }
