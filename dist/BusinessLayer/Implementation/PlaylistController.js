@@ -86,12 +86,12 @@ class PlaylistController {
                     this._Vote.destroyAsync(vote['id']);
                 });
             }
+            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
             let vote = yield this._Vote.createAsync({
                 guestId: guestId,
                 playlistId: playlistId,
                 type: type
             });
-            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
             video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
             let rankedVideo = this.ResourcePool.insertSubListResource("Party-" + video['partyId'], "Playlist", video);
             console.log(video);

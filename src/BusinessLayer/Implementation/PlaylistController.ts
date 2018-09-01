@@ -81,8 +81,6 @@ export default class PlaylistController {
 
         let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        
-
         let guests = await this._Guest.getWhereAsync({guestId: guestId});
 
         if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
@@ -101,13 +99,13 @@ export default class PlaylistController {
             })
         }
 
+        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
+        
         let vote = await this._Vote.createAsync({
             guestId: guestId,
             playlistId: playlistId,
             type: type
         });
-
-        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
 
         video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
