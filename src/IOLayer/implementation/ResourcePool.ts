@@ -190,7 +190,7 @@ export default class ResourcePool implements IResourcePool {
                 console.log(resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
-            console.log("Changed Resource: " + changeType + " of " + resource);
+            console.log(changeType + " " + resourceType + " : " + resource);
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }

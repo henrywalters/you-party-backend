@@ -133,9 +133,10 @@ class ResourcePool {
             resource['subIndex'] = subIndex;
             resource['index'] = index;
             for (let i = 0; i < pool.Pool.length; i++) {
+                console.log(resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
-            console.log("Added Resource: ", resource);
+            console.log(changeType + " " + resourceType + " : " + resource);
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
