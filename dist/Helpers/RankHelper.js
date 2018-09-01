@@ -98,10 +98,10 @@ class RankHelper {
             }
             let rank = this.Rank(type, list[midpoint], item);
             console.log("Rank: " + rank);
-            if (rank < 0) {
+            if (rank > 0) {
                 low = midpoint;
             }
-            else if (rank > 0) {
+            else if (rank < 0) {
                 high = midpoint;
             }
             else {
