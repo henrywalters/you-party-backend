@@ -131,6 +131,7 @@ class ResourcePool {
             resource["changeType"] = changeType;
             resource['subIndex'] = subIndex;
             resource['index'] = index;
+            resource['changeTime'] = Date.now();
             console.log("SHOULD BE EMITTING: " + resourceType + " sub index: " + subIndex);
             console.log(pool.Pool.length + " members in channel");
             for (let i = 0; i < pool.Pool.length; i++) {

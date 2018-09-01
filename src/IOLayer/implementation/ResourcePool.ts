@@ -185,6 +185,7 @@ export default class ResourcePool implements IResourcePool {
             resource["changeType"] = changeType;
             resource['subIndex'] = subIndex;
             resource['index'] = index;
+            resource['changeTime'] = Date.now();
 
             console.log("SHOULD BE EMITTING: " + resourceType + " sub index: " + subIndex);
 
