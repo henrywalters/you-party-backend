@@ -35,7 +35,6 @@ class ResourcePool {
     }
     subListPoolExists(resourceType, subIndex) {
         if (this.poolExists(resourceType)) {
-            console.log(this.Pools[resourceType]);
             if (typeof this.Pools[resourceType].SubListPools[subIndex] !== 'undefined') {
                 return true;
             }
