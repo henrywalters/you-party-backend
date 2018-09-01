@@ -56,6 +56,7 @@ class App {
                 this.ResourcePool.joinSubPool(resource.resource, resource.subIndex, socket);
             });
             socket.on('join-sub-list-resource', (resource) => {
+                console.log("Joined Sub List Resource");
                 this.ResourcePool.joinSubListPool(resource.resource, resource.subIndex, socket);
             });
         });
