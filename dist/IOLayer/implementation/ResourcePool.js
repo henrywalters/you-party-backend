@@ -179,9 +179,9 @@ class ResourcePool {
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 1);
             this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
-            return;
         }
         else {
+            console.log("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }

@@ -1,5 +1,18 @@
 import DataObject from "../Abstract/DataObject";
 import * as mysql from 'mysql';
+import { ISortable } from '../../Helpers/RankHelper';
+
+export interface IPlaylistVideo {
+    id: string;
+    partyId: string;
+    videoId: string;
+    title: string;
+    description: string;
+    videoKey: string;
+    upvotes: number;
+    downvotes: number;
+    timeAdded: string;
+}
 
 export default class Playlist extends DataObject {
     Table: string = "Playlists";
@@ -12,7 +25,7 @@ export default class Playlist extends DataObject {
 
     getPlaylist(partyId: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.videoId, V.title, V.description, V.videoKey, 
+            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, 
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (
@@ -41,9 +54,26 @@ export default class Playlist extends DataObject {
         })
     }
 
+    getPlaylistAsync(partyId: string) {
+        return new Promise<Array<IPlaylistVideo>> (res => {
+            this.getPlaylist(partyId, (error, playlist) => {
+                res(playlist);
+            })
+        });
+    }
+
+    getPlaylistVideoAsync(playlistId: string) {
+        return new Promise<IPlaylistVideo> (res => {
+            this.getPlaylistVideo(playlistId, (error, video) => {
+                console.log("async returning: " + video);
+                res(video);
+            })
+        })
+    }
+
     getPlaylistVideo(id: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.videoId, V.title, V.description, V.videoKey, 
+            SELECT P.id, P.partyId,  P.videoId,V.title, V.description, V.videoKey, 
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (

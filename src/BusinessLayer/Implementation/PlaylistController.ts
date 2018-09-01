@@ -4,8 +4,9 @@ import Party from '../../DataLayer/Domain/Party';
 import PartyGuest from '../../DataLayer/Domain/PartyGuest';
 import IResourcePool from '../../IOLayer/interface/IResourcePool';
 import Vote from '../../DataLayer/Domain/Vote';
-import { RankTypes } from '../../Helpers/RankHelper';
+import { RankTypes, ISortable } from '../../Helpers/RankHelper';
 import RankHelper from '../../Helpers/RankHelper';
+import { IPlaylistVideo } from '../../DataLayer/Domain/Playlist';
 
 export default class PlaylistController {
     private DataSource: IQueryable;
@@ -74,6 +75,48 @@ export default class PlaylistController {
         })
     }
 
+    private async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {
+
+        const freeVoteTest = true;
+
+        let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
+
+        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
+
+        let guests = await this._Guest.getWhereAsync({guestId: guestId});
+
+        if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
+            throw new Error("Guest does not exist/is not in party");
+        }
+
+        let votes = await this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId});
+
+        if (votes.length > 0 && !freeVoteTest) {
+
+            //By design, there should never be more than 1 vote (except if freeVoteTest is set to true) 
+            //But just to be safe, we will destroy "all" votes
+
+            await votes.map(vote => {
+                this._Vote.destroyAsync(vote['id']);
+            })
+        }
+
+        let vote = await this._Vote.createAsync({
+            guestId: guestId,
+            playlistId: playlistId,
+            type: type
+        });
+
+        video = await this._Playlist.getPlaylistVideoAsync(playlistId);
+
+        let rankedVideo = this.ResourcePool.insertSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);
+        console.log(video);
+        return new Promise<Object> (respond => {
+            respond(rankedVideo);
+        })
+
+    }
+
     private vote(guestId: string, playlistId: string, type: string, cb: {(error: string, vote: Object): void}) {
         this._Playlist.get(playlistId, (error, playlist) => {
             if (error || typeof playlist === 'undefined') {
@@ -94,6 +137,7 @@ export default class PlaylistController {
                                     playlistId: playlistId,
                                     type: type
                                 });
+
                                 this._Vote.create({
                                     guestId: guestId,
                                     playlistId: playlistId,
@@ -188,8 +232,16 @@ export default class PlaylistController {
         this.vote(guestId, playlistId, "up", cb);
     }
 
+    public async upvoteAsync(guestId: string, playlistId: string): Promise<Object> {
+        return await this.voteAsync(guestId, playlistId, "up");
+    }
+
     public downvote(guestId: string, playlistId: string, cb: {(error: string, vote: Object): void}) {
         console.log("Downvoting");
         this.vote(guestId, playlistId, "down", cb);
+    }
+
+    public async downvoteAsync(guestId: string, playlistId: string): Promise<Object> {
+        return await this.voteAsync(guestId, playlistId, "down");
     }
 }

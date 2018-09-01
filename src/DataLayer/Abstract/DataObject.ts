@@ -78,6 +78,18 @@ export default abstract class DataObject implements IDataObject {
             callback(error, res);
         })
     }
+
+    getAsync(index: string): Promise<Object> {
+        return new Promise<Object>(respond => {
+            this.get(index, (error, res) => {
+                if (error) {
+                    throw new Error("Could not find index: " + index);
+                } else {
+                    respond(res);
+                }
+            })
+        })
+    }
     
     getWhere(filter: Object, callback: {(error: boolean, res: Array<Object>): void}): void {
         this.DataSource.getWhere(this.Table, filter, (error, res) => {
@@ -85,8 +97,32 @@ export default abstract class DataObject implements IDataObject {
         })
     }
 
+    getWhereAsync(filter: Object): Promise<Array<Object>> {
+        return new Promise<Array<Object>> (respond => {
+            this.getWhere(filter, (error, res) => {
+                if (error) {
+                    throw new Error("Get Where Failed filter: " + filter);
+                } else {
+                    respond(res);
+                }
+            })
+        });
+    }
+
     getAll(callback: {(error: boolean, res: Array<Object>): void }): void {
         this.DataSource.getAll(this.Table, (error, res) => {callback(error,res)});
+    }
+
+    getAllAsync(): Promise<Array<Object>> {
+        return new Promise<Array<Object>> (respond => {
+            this.getAll((error, res) => {
+                if (error) {
+                    throw new Error("Get All Failed");
+                } else {
+                    respond(res);
+                }
+            })
+        })
     }
 
     create(model: Object, callback: {(error: boolean, res: Object):void}): void {
@@ -115,6 +151,18 @@ export default abstract class DataObject implements IDataObject {
         }
     }
 
+    createAsync(model: Object): Promise<Object> {
+        return new Promise<Object> (respond => {
+            this.create(model, (error, res) => {
+                if (error) {
+                    throw new Error("Create failed");
+                } else {
+                    respond(res);
+                }
+            })
+        })
+    }
+
     createArray(models: Array<Object>, callback: {(error: boolean, res: Array<Object>): void}): void {
         let valid = true;
         models.map((model) => {
@@ -133,6 +181,18 @@ export default abstract class DataObject implements IDataObject {
         }
     }
 
+    createArrayAsync(models: Array<Object>): Promise<Array<Object>> {
+        return new Promise<Array<Object>> (respond => {
+            this.createArray(models, (error, res) => {
+                if (error) {
+                    throw new Error("Create Array Failed");
+                } else {
+                    respond(res);
+                }
+            })
+        })
+    }
+
     update(index: string, changes: Object, callback: {(error: boolean, res: object):void}): void {
         if (this.isValidPartialObject(changes)) {
             this.DataSource.update(this.Table, index, changes, (error, res) => {
@@ -148,6 +208,18 @@ export default abstract class DataObject implements IDataObject {
         }
     }
 
+    updateAsync(index: string, changes: Object): Promise<Object> {
+        return new Promise<Object> (respond => {
+            this.update(index, changes, (error, res) => {
+                if (error) {
+                    throw new Error("Update failed");
+                } else {
+                    respond(res);
+                }
+            })
+        })
+    }
+
     destroy(index: string, callback: {(success: boolean):void}): void {
         this.DataSource.destroy(this.Table, index, (success) => {
             if (this.ResourcePool !== null) {
@@ -157,5 +229,13 @@ export default abstract class DataObject implements IDataObject {
             }
             callback(success)
         });
+    }
+
+    destroyAsync(index: string): Promise<void> {
+        return new Promise<void> (respond => {
+            this.destroy(index, (success) => {
+                respond();
+            })
+        })
     }
 }

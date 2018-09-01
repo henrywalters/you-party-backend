@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Playlist_1 = require("../../DataLayer/Domain/Playlist");
 const Party_1 = require("../../DataLayer/Domain/Party");
@@ -60,6 +68,36 @@ class PlaylistController {
         this._Playlist.getPlaylist(partyId, (error, playlist) => {
             playlist = RankHelper_1.default.Sort(rankType, playlist);
             cb(error, playlist);
+        });
+    }
+    voteAsync(guestId, playlistId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const freeVoteTest = true;
+            let video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
+            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
+            let guests = yield this._Guest.getWhereAsync({ guestId: guestId });
+            if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
+                throw new Error("Guest does not exist/is not in party");
+            }
+            let votes = yield this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId });
+            if (votes.length > 0 && !freeVoteTest) {
+                //By design, there should never be more than 1 vote (except if freeVoteTest is set to true) 
+                //But just to be safe, we will destroy "all" votes
+                yield votes.map(vote => {
+                    this._Vote.destroyAsync(vote['id']);
+                });
+            }
+            let vote = yield this._Vote.createAsync({
+                guestId: guestId,
+                playlistId: playlistId,
+                type: type
+            });
+            video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
+            let rankedVideo = this.ResourcePool.insertSubListResource("Party-" + video['partyId'], "Playlist", video);
+            console.log(video);
+            return new Promise(respond => {
+                respond(rankedVideo);
+            });
         });
     }
     vote(guestId, playlistId, type, cb) {
@@ -176,9 +214,19 @@ class PlaylistController {
         console.log("Upvoting");
         this.vote(guestId, playlistId, "up", cb);
     }
+    upvoteAsync(guestId, playlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.voteAsync(guestId, playlistId, "up");
+        });
+    }
     downvote(guestId, playlistId, cb) {
         console.log("Downvoting");
         this.vote(guestId, playlistId, "down", cb);
+    }
+    downvoteAsync(guestId, playlistId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.voteAsync(guestId, playlistId, "down");
+        });
     }
 }
 exports.default = PlaylistController;

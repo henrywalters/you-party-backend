@@ -11,38 +11,64 @@ class PlaylistRoutes {
         app.post("/playlist/:playlistId/upvote", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
-            playlist.upvote(user['id'], req.params.playlistId, (error, vote) => {
+            playlist.upvoteAsync(user['id'], req.params.playlistId)
+                .then((video) => {
+                res.json({
+                    success: true,
+                    video: video
+                });
+            })
+                .catch(() => {
+                res.json({
+                    success: false,
+                    video: null
+                });
+            });
+            /*playlist.upvote(user['id'], req.params.playlistId, (error, vote) => {
                 if (error) {
                     res.json({
                         success: false,
                         error: error
-                    });
-                }
-                else {
+                    })
+                } else {
                     res.json({
                         success: true,
                         vote: vote
-                    });
+                    })
                 }
-            });
+            })
+            */
         });
         app.post("/playlist/:playlistId/downvote", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
-            playlist.downvote(user['id'], req.params.playlistId, (error, vote) => {
+            playlist.downvoteAsync(user['id'], req.params.playlistId)
+                .then((video) => {
+                res.json({
+                    success: true,
+                    video: video
+                });
+            })
+                .catch((error) => {
+                res.json({
+                    success: false,
+                    error: error
+                });
+            });
+            /*playlist.downvote(user['id'], req.params.playlistId, (error, vote) => {
                 if (error) {
                     res.json({
                         success: false,
                         error: error
-                    });
-                }
-                else {
+                    })
+                } else {
                     res.json({
                         success: true,
                         vote: vote
-                    });
+                    })
                 }
-            });
+            })
+            */
         });
     }
 }
