@@ -99,25 +99,26 @@ class PlaylistController {
         });
     }
     vote(guestId, playlistId, type, cb) {
-        this._Playlist.get(playlistId, (error, playlist) => {
+        /*this._Playlist.get(playlistId, (error, playlist) => {
             if (error || typeof playlist === 'undefined') {
                 cb("Playlist does not exist", null);
-            }
-            else {
-                this._Guest.getWhere({ guestId: guestId }, (error, guests) => {
+            } else {
+                this._Guest.getWhere({guestId: guestId}, (error, guests) => {
                     if (guests.length === 0 || guests[0]['partyId'] !== playlist['partyId']) {
                         cb("User not in party", null);
-                    }
-                    else {
-                        this._Vote.getWhere({ guestId: guestId, playlistId: playlistId }, (error, votes) => {
+                    } else {
+                        this._Vote.getWhere({guestId: guestId, playlistId: playlistId}, (error, votes) => {
+
                             let freeVoteTest = true;
-                            if (error || votes.length === 0 || freeVoteTest) { // add a new vote - no logic required 
+
+                            if (error || votes.length === 0 || freeVoteTest) { // add a new vote - no logic required
                                 console.log("Sending: ");
                                 console.log({
                                     guestId: guestId,
                                     playlistId: playlistId,
                                     type: type
                                 });
+
                                 this._Vote.create({
                                     guestId: guestId,
                                     playlistId: playlistId,
@@ -125,88 +126,87 @@ class PlaylistController {
                                 }, (error, vote) => {
                                     if (error) {
                                         cb("Vote failed to create", null);
-                                    }
-                                    else {
+                                    } else {
                                         this.ResourcePool.createSubResource("Party-" + playlist['partyId'], "Votes", {
                                             guestId: guestId,
                                             playlistId: playlistId,
                                             type: type
-                                        });
+                                        })
                                         console.log(playlistId);
                                         this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
                                             console.log(error, video);
                                             if (!error) {
                                                 video = this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
                                                 cb(null, video);
-                                            }
-                                            else {
+                                            } else {
                                                 cb("Video not found", null);
                                             }
-                                        });
+                                        })
                                     }
-                                });
-                            }
-                            else {
+                                })
+                            } else {
                                 //Vote truth table:
                                 /*
                                         up  down
                                     up  delete   update to up
                                     down update to down delete
                                 */
-                                let vote = votes[0];
-                                if (vote['type'] === type) {
-                                    this._Vote.destroy(vote['id'], (success) => {
-                                        this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
-                                            id: vote['id'],
-                                            guestId: guestId,
-                                            playlistId: playlistId,
-                                            type: type
-                                        });
-                                        this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
-                                            console.log(video);
-                                            if (!error) {
-                                                video = this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
-                                                cb(null, video);
-                                            }
-                                            else {
-                                                cb("Video not found", null);
-                                            }
-                                        });
-                                    });
-                                }
-                                else {
-                                    let newType = type === "up" ? "down" : "up"; //swap the type
-                                    this._Vote.update(vote['id'], {
-                                        type: newType
-                                    }, (error, vote) => {
-                                        if (error) {
-                                            cb("Vote failed to update", null);
-                                        }
-                                        else {
-                                            this.ResourcePool.updateSubResource("Party-" + playlist['partyId'], "Votes", {
-                                                guestId: guestId,
-                                                playlistId: playlistId,
+        /*
+                                        let vote = votes[0];
+        
+                                        if (vote['type'] === type) {
+                                            this._Vote.destroy(vote['id'], (success) => {
+                                                
+                                                this.ResourcePool.destroySubResource("Party-" + playlist['partyId'], "Votes", {
+                                                    id: vote['id'],
+                                                    guestId: guestId,
+                                                    playlistId: playlistId,
+                                                    type: type
+                                                })
+        
+                                                this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
+                                                    console.log(video);
+                                                    if (!error) {
+                                                        video = this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                        cb(null, video);
+                                                    } else {
+                                                        cb("Video not found", null);
+                                                    }
+                                                })
+                                            })
+                                        } else {
+                                            let newType = type === "up" ? "down" : "up"; //swap the type
+                                            this._Vote.update(vote['id'], {
                                                 type: newType
-                                            });
-                                            this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
-                                                console.log(error, video);
-                                                if (!error) {
-                                                    video = this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
-                                                    cb(null, video);
+                                            }, (error, vote) => {
+                                                if (error) {
+                                                    cb("Vote failed to update", null);
+                                                } else {
+                                                    this.ResourcePool.updateSubResource("Party-" + playlist['partyId'], "Votes", {
+                                                        guestId: guestId,
+                                                        playlistId: playlistId,
+                                                        type: newType
+                                                    })
+        
+                                                    this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
+                                                        console.log(error, video);
+                                                        if (!error) {
+                                                            video = this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
+                                                            cb(null, video);
+                                                        } else {
+                                                            cb("Video not found", null);
+                                                        }
+                                                    })
                                                 }
-                                                else {
-                                                    cb("Video not found", null);
-                                                }
-                                            });
+                                            })
                                         }
-                                    });
-                                }
+                                    }
+                                })
                             }
-                        });
+                        })
                     }
-                });
-            }
-        });
+                })
+                */
     }
     upvote(guestId, playlistId, cb) {
         console.log("Upvoting");

@@ -116,7 +116,7 @@ export default class PlaylistController {
     }
 
     private vote(guestId: string, playlistId: string, type: string, cb: {(error: string, vote: Object): void}) {
-        this._Playlist.get(playlistId, (error, playlist) => {
+        /*this._Playlist.get(playlistId, (error, playlist) => {
             if (error || typeof playlist === 'undefined') {
                 cb("Playlist does not exist", null);
             } else {
@@ -168,7 +168,7 @@ export default class PlaylistController {
                                     up  delete   update to up
                                     down update to down delete
                                 */
-
+/*
                                 let vote = votes[0];
 
                                 if (vote['type'] === type) {
@@ -223,6 +223,7 @@ export default class PlaylistController {
                 })
             }
         })
+        */
     }
 
     public upvote(guestId: string, playlistId: string, cb: {(error: string, vote: Object): void}) {
