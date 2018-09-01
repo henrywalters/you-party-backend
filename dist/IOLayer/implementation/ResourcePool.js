@@ -93,7 +93,7 @@ class ResourcePool {
         }
     }
     joinSubListPool(resourceType, subIndex, socket) {
-        let pool = this.getPool(resourceType);
+        let pool = this.getSubListPool(resourceType, subIndex);
         pool.Pool.push(socket);
         console.log(this.Pools[resourceType].Pool.length + " Members in Sub List Resource Pool: " + resourceType + " - " + subIndex);
     }
