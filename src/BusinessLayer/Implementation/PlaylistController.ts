@@ -75,7 +75,7 @@ export default class PlaylistController {
         })
     }
 
-    private async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {
+    async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {
 
         const freeVoteTest = true;
 
