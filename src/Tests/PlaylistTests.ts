@@ -38,6 +38,7 @@ export default class PlaylistTests {
             let vote = this.PlaylistController.voteAsync(guestId, playlist[r1].id, r2);
             console.log(i + " out of " + quantity);
             
+            await setTimeout(() => {}, 50);
         }
 
         return new Promise<void> (response => {
