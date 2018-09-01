@@ -2,6 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const RankHelper_1 = require("../../Helpers/RankHelper");
 const RankHelper_2 = require("../../Helpers/RankHelper");
+const ResourceQueue_1 = require("./ResourceQueue");
+class SubListExecutionFunction {
+    constructor(func) {
+        this.parameters = {};
+        this.function = func;
+    }
+    execute() {
+        return this.function();
+    }
+}
 class ResourcePool {
     constructor(resourceTypes) {
         this.Pools = {};
@@ -86,7 +96,8 @@ class ResourcePool {
             this.Pools[resourceType].SubListPools[subIndex] = {
                 SubIndex: subIndex,
                 Pool: [],
-                List: RankHelper_2.default.Sort(RankHelper_1.RankTypes["Wilson Lower Bound"], initialList)
+                List: RankHelper_2.default.Sort(RankHelper_1.RankTypes["Wilson Lower Bound"], initialList),
+                Queue: new ResourceQueue_1.default()
             };
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
             console.log(this.Pools[resourceType].SubListPools[subIndex]);
@@ -186,11 +197,16 @@ class ResourcePool {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
-    swapSubListResource(resourceType, subIndex, resource) {
+    swapSubListResource(resourceType, subIndex, oldResource, newResource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            this.removeSubListResource(resourceType, subIndex, resource);
-            return this.insertSubListResource(resourceType, subIndex, resource);
+            let queue = [
+                new SubListExecutionFunction(this.removeSubListResource(resourceType, subIndex, oldResource)),
+                new SubListExecutionFunction(this.insertSubListResource(resourceType, subIndex, newResource))
+            ];
+            let video = queue[1];
+            pool.Queue.addToQueue(queue);
+            return video.function;
         }
         else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");

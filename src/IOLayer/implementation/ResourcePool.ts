@@ -3,6 +3,8 @@ import * as SocketIO from 'socket.io';
 import * as Events from 'events';
 import { RankTypes, ISortable } from '../../Helpers/RankHelper';
 import RankHelper from '../../Helpers/RankHelper';
+import ResourceQueue from './ResourceQueue';
+import IExecutable from '../interface/IExecutable';
 
 interface IPool {
     Type: string;
@@ -23,7 +25,22 @@ interface ISubPool {
 interface ISubListPool {
     SubIndex: string,
     Pool: Array<SocketIO.Socket>,
-    List: Array<ISortable>
+    List: Array<ISortable>,
+    Queue: ResourceQueue<SubListExecutionFunction>
+}
+
+class SubListExecutionFunction implements IExecutable {
+    parameters: Object;
+    function: any;
+    
+    constructor(func: any) {
+        this.parameters = {};
+        this.function = func;
+    }
+
+    execute() {
+        return this.function();
+    }
 }
 
 export default class ResourcePool implements IResourcePool {
@@ -135,7 +152,8 @@ export default class ResourcePool implements IResourcePool {
             this.Pools[resourceType].SubListPools[subIndex] = {
                 SubIndex: subIndex,
                 Pool: [],
-                List: RankHelper.Sort(RankTypes["Wilson Lower Bound"], initialList)
+                List: RankHelper.Sort(RankTypes["Wilson Lower Bound"], initialList),
+                Queue: new ResourceQueue<SubListExecutionFunction>()
             }
 
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
@@ -253,11 +271,20 @@ export default class ResourcePool implements IResourcePool {
         }
     }
 
-    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): ISortable {
+    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, oldResource: T, newResource: T): ISortable {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            this.removeSubListResource(resourceType, subIndex, resource);
-            return this.insertSubListResource(resourceType, subIndex, resource);
+
+            let queue = [
+                new SubListExecutionFunction(this.removeSubListResource(resourceType, subIndex, oldResource)),
+                new SubListExecutionFunction(this.insertSubListResource(resourceType, subIndex, newResource))
+            ]
+
+            let video = queue[1];
+
+            pool.Queue.addToQueue(queue);
+
+            return video.function;
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }

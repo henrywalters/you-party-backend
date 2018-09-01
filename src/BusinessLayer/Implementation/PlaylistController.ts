@@ -107,9 +107,7 @@ export default class PlaylistController {
  
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        this.ResourcePool.removeSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video);   
-
-        let rankedVideo = this.ResourcePool.insertSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", modifiedVideo);
+        let rankedVideo = this.ResourcePool.swapSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video, modifiedVideo);   
 
         return new Promise<Object> (respond => {
             respond(rankedVideo);

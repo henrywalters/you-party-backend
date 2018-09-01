@@ -16,5 +16,5 @@ export default interface IResourcePool {
     joinSubListPool<T extends ISortable>(resourceType: string, subIndex: string, socket: SocketIO.Socket): void;
     insertSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): ISortable;
     removeSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void;
-    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): ISortable;
+    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, oldResource: T, newResource: T): ISortable
 }

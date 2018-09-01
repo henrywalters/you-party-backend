@@ -92,8 +92,7 @@ class PlaylistController {
                 type: type
             });
             let modifiedVideo = yield this._Playlist.getPlaylistVideoAsync(playlistId);
-            this.ResourcePool.removeSubListResource("Party-" + video['partyId'], "Playlist", video);
-            let rankedVideo = this.ResourcePool.insertSubListResource("Party-" + video['partyId'], "Playlist", modifiedVideo);
+            let rankedVideo = this.ResourcePool.swapSubListResource("Party-" + video['partyId'], "Playlist", video, modifiedVideo);
             return new Promise(respond => {
                 respond(rankedVideo);
             });
