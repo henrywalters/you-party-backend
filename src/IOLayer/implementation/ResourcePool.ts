@@ -185,6 +185,10 @@ export default class ResourcePool implements IResourcePool {
             resource['subIndex'] = subIndex;
             resource['index'] = index;
 
+            console.log("SHOULD BE EMITTING: " + resourceType);
+
+            console.log(pool.Pool.length + " members in channel");
+
             for (let i = 0; i < pool.Pool.length; i++) {
                 console.log("Emitting: " + resourceType);
                 pool.Pool[i].emit(resourceType, resource);
