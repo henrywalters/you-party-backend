@@ -14,7 +14,7 @@ export default class TestRoutes implements IResourceRouter {
 
             let playlistTests = new PlaylistTests(ds, pool);
 
-            playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity);
+            playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity).then(res.json({status: "complete"}));
         }) 
     }
 }

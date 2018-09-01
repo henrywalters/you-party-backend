@@ -32,6 +32,10 @@ export default class PlaylistTests {
             let r1 = randomInt(n);
             let r2 = (randomInt(2) === 0) ? "up" : "down";
             let vote = this.PlaylistController.voteAsync(guestId, playlist[r1].id, r2);
+            console.log(i + " out of " + quantity);
+            return new Promise<void> (response => {
+                response();
+            })
         }
     }
 }

@@ -9,7 +9,7 @@ class TestRoutes {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
             let playlistTests = new PlaylistTests_1.default(ds, pool);
-            playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity);
+            playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity).then(res.json({ status: "complete" }));
         });
     }
 }
