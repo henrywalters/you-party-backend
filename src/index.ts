@@ -12,6 +12,7 @@ import VideoRoutes from './IOLayer/implementation/VideoRoutes';
 import Config from './Helpers/ConfigHelper';
 import PlaylistRoutes from './IOLayer/implementation/PlaylistRoutes';
 import RankHelper, { RankTypes } from './Helpers/RankHelper';
+import TestRoutes from './IOLayer/implementation/TestRoutes';
 
 
 
@@ -29,7 +30,8 @@ let mainApp = new App(db, new ResourcePool(
     new UserRoutes(),
     new PartyRoutes(),
     new VideoRoutes(),
-    new PlaylistRoutes()
+    new PlaylistRoutes(),
+    new TestRoutes()
 ]);
 
 let app = mainApp.express;
@@ -40,7 +42,8 @@ mainApp.mountRoutes([
     new UserRoutes(),
     new PartyRoutes(),
     new VideoRoutes(),
-    new PlaylistRoutes()
+    new PlaylistRoutes(),
+    new TestRoutes()
 ]);
 
 server.listen(process.env.PORT || port);
