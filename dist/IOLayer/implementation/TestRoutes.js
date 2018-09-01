@@ -5,11 +5,11 @@ const PlaylistTests_1 = require("../../Tests/PlaylistTests");
 class TestRoutes {
     route(app, socket, ds, pool) {
         let auth = new Auth_1.default(ds);
-        app.get("/test/party/:partyId/random-votes", (req, res) => {
+        app.get("/test/party/:partyId/random-votes/:quantity", (req, res) => {
             auth.validateHeader(req, res);
             let user = auth.getSelf(req);
             let playlistTests = new PlaylistTests_1.default(ds, pool);
-            playlistTests.randomVotes(req.params.partyId, user['id'], 1000);
+            playlistTests.randomVotes(req.params.partyId, user['id'], req.params.quantity);
         });
     }
 }
