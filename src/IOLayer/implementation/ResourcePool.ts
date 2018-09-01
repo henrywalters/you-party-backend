@@ -187,7 +187,6 @@ export default class ResourcePool implements IResourcePool {
             resource['index'] = index;
 
             for (let i = 0; i < pool.Pool.length; i++) {
-                console.log(resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
             console.log(changeType + " " + resourceType + " : " + resource);

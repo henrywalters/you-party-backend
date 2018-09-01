@@ -5,11 +5,13 @@ import VideoSearchController from '../../BusinessLayer/Implementation/VideoSearc
 import PlaylistController from '../../BusinessLayer/Implementation/PlaylistController';
 import Auth from "../../AuthLayer/implementation/Auth";
 import { RankTypes } from '../../Helpers/RankHelper';
+import PartyController from '../../BusinessLayer/Implementation/PartyController';
 
 export default class VideoRoutes implements IResourceRouter {
     route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
         let videoSearch = new VideoSearchController(ds);
         let playlist = new PlaylistController(ds, pool);
+        let party = new PartyController(ds, pool);
         let auth = new Auth(ds);
 
         app.get("/video", (req, res) => {
@@ -46,7 +48,29 @@ export default class VideoRoutes implements IResourceRouter {
             })
         });
 
+        app.get("/party/self/playlist", (req, res) => {
+            auth.validateHeader(req, res);
+            let user = auth.getSelf(req);
+            party.currentParty(user['id'], (error, party) => {
+                if (!error) {
+                    playlist.getSortedPlaylist(party['id'], RankTypes["Wilson Lower Bound"], (error, playlist) => {
+                        if (error) {
+                            res.json({
+                                success: false
+                            })
+                        } else {
+                            res.json({
+                                success: true,
+                                playlist: playlist
+                            })
+                        }
+                    })
+                }
+            })
+        })
+
         app.get("/party/:partyId/playlist", (req, res) => {
+
             playlist.getSortedPlaylist(req.params.partyId, RankTypes["Wilson Lower Bound"], (error, playlist) => {
                 if (error) {
                     res.json({

@@ -133,7 +133,6 @@ class ResourcePool {
             resource['subIndex'] = subIndex;
             resource['index'] = index;
             for (let i = 0; i < pool.Pool.length; i++) {
-                console.log(resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
             console.log(changeType + " " + resourceType + " : " + resource);

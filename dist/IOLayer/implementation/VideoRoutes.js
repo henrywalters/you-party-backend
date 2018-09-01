@@ -4,10 +4,12 @@ const VideoSearchController_1 = require("../../BusinessLayer/Implementation/Vide
 const PlaylistController_1 = require("../../BusinessLayer/Implementation/PlaylistController");
 const Auth_1 = require("../../AuthLayer/implementation/Auth");
 const RankHelper_1 = require("../../Helpers/RankHelper");
+const PartyController_1 = require("../../BusinessLayer/Implementation/PartyController");
 class VideoRoutes {
     route(app, socket, ds, pool) {
         let videoSearch = new VideoSearchController_1.default(ds);
         let playlist = new PlaylistController_1.default(ds, pool);
+        let party = new PartyController_1.default(ds, pool);
         let auth = new Auth_1.default(ds);
         app.get("/video", (req, res) => {
             if (typeof req.query.q != 'undefined') {
@@ -39,6 +41,27 @@ class VideoRoutes {
                     res.json({
                         success: true,
                         video: video
+                    });
+                }
+            });
+        });
+        app.get("/party/self/playlist", (req, res) => {
+            auth.validateHeader(req, res);
+            let user = auth.getSelf(req);
+            party.currentParty(user['id'], (error, party) => {
+                if (!error) {
+                    playlist.getSortedPlaylist(party['id'], RankHelper_1.RankTypes["Wilson Lower Bound"], (error, playlist) => {
+                        if (error) {
+                            res.json({
+                                success: false
+                            });
+                        }
+                        else {
+                            res.json({
+                                success: true,
+                                playlist: playlist
+                            });
+                        }
                     });
                 }
             });

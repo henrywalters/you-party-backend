@@ -41,14 +41,14 @@ class Playlist extends DataObject_1.default {
             cb(error, res);
         });
     }
-    getPlaylistVideo(partyId, videoId, cb) {
+    getPlaylistVideo(id, cb) {
         let sql = `
             SELECT P.id, P.videoId, V.title, V.description, V.videoKey, 
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (
                 (
-                    SELECT * FROM Playlists WHERE partyId = ? AND videoId = ? AND STATUS = 'queued'
+                    SELECT * FROM Playlists WHERE id = ? AND STATUS = 'queued'
                 ) P
                 INNER JOIN
                 (
@@ -64,7 +64,7 @@ class Playlist extends DataObject_1.default {
                 ) DOWN ON DOWN.playlistId = P.id
             )
         `;
-        sql = mysql.format(sql, [partyId, videoId]);
+        sql = mysql.format(sql, [id]);
         this.query(sql, (error, res) => {
             if (res.length > 0) {
                 cb(false, res[0]);

@@ -38,8 +38,9 @@ class PlaylistController {
                             status: "queued"
                         }, (error, video) => {
                             if (!error) {
+                                console.log(video);
                                 console.log("Successfully added, searching video in palylist");
-                                this._Playlist.getPlaylistVideo(partyId, videoId, (error, video) => {
+                                this._Playlist.getPlaylistVideo(video['id'], (error, video) => {
                                     console.log(video);
                                     this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video);
                                     cb(null, video);
@@ -96,7 +97,8 @@ class PlaylistController {
                                             playlistId: playlistId,
                                             type: type
                                         });
-                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                        console.log(playlistId);
+                                        this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
                                             console.log(video);
                                             this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
                                             cb(null, video);
@@ -120,7 +122,7 @@ class PlaylistController {
                                             playlistId: playlistId,
                                             type: type
                                         });
-                                        this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                        this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
                                             console.log(video);
                                             this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
                                             cb(null, video);
@@ -141,7 +143,7 @@ class PlaylistController {
                                                 playlistId: playlistId,
                                                 type: newType
                                             });
-                                            this._Playlist.getPlaylistVideo(vote['partyId'], vote['videoId'], (error, video) => {
+                                            this._Playlist.getPlaylistVideo(playlistId, (error, video) => {
                                                 console.log(video);
                                                 this.ResourcePool.swapSubListResource("Party-" + playlist['partyId'], "Playlist", video);
                                                 cb(null, video);
