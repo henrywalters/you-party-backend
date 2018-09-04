@@ -19,9 +19,12 @@ export default class ResourceQueue<T extends IExecutable> {
     }
 
     private handleQueue():void {
+        console.log("Handling Queue");
+        console.log("Queue Size: " + this.Queue.length);
         if (typeof this.Queue[0] === 'undefined') { //quick check instead of counting length each time
             this.running = false;
         } else {
+            console.log("Executing top of stack");
             this.running = true;
 
             let itemArr = this.Queue.shift();

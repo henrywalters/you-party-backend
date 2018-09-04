@@ -5,6 +5,7 @@ import { RankTypes, ISortable } from '../../Helpers/RankHelper';
 import RankHelper from '../../Helpers/RankHelper';
 import ResourceQueue from './ResourceQueue';
 import IExecutable from '../interface/IExecutable';
+import { exec } from 'child_process';
 
 interface IPool {
     Type: string;
@@ -26,22 +27,29 @@ interface ISubListPool {
     SubIndex: string,
     Pool: Array<SocketIO.Socket>,
     List: Array<ISortable>,
-    Queue: ResourceQueue<SubListExecutionFunction>
+    Queue: Array<IQueueItem>,
+    IsHandlingQueue: boolean
+}
+
+interface IQueueItem {
+    Executables: Array<any>
+    Callback: any;
 }
 
 class SubListExecutionFunction implements IExecutable {
     parameters: Object;
     function: any;
     
-    constructor(func: any) {
-        this.parameters = {};
+    constructor(func: any, parameters: Object) {
+        this.parameters = parameters;
         this.function = func;
     }
 
     execute() {
-        return this.function();
+        return this.function;
     }
 }
+
 
 export default class ResourcePool implements IResourcePool {
 
@@ -153,7 +161,8 @@ export default class ResourcePool implements IResourcePool {
                 SubIndex: subIndex,
                 Pool: [],
                 List: RankHelper.Sort(RankTypes["Wilson Lower Bound"], initialList),
-                Queue: new ResourceQueue<SubListExecutionFunction>()
+                Queue: [],
+                IsHandlingQueue: false
             }
 
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
@@ -243,6 +252,73 @@ export default class ResourcePool implements IResourcePool {
         this.subResourceChange(resourceType, subIndex, "destroy", resource);
     }
 
+    addToQueue(resourceType: string, subIndex: string, queueItem: IQueueItem) {
+        if (this.subListPoolExists(resourceType, subIndex)) {
+            let pool = this.getSubListPool(resourceType, subIndex);
+            pool.Queue.push(queueItem);
+            this.executeQueue(resourceType, subIndex);  
+        }
+    }
+
+    executeQueue(resourceType: string, subIndex: string, context: any = false){
+
+        let that = this;
+
+        if (context) {
+            that = context;
+        }
+
+        console.log(that);
+
+        if (that.subListPoolExists(resourceType, subIndex)) {
+            let pool = that.getSubListPool(resourceType, subIndex);
+
+            console.log("Got pool")
+
+            if (!pool.IsHandlingQueue) {
+                console.log("Handling Queue");
+                pool.IsHandlingQueue = true;
+                console.log("Queue Length: " + pool.Queue.length);
+                if (pool.Queue.length === 0) {
+                    pool.IsHandlingQueue = false;
+                } else {
+                    let queueItem = pool.Queue.shift();
+                    if (pool.Queue.length === 0) {
+                        pool.IsHandlingQueue = false;
+                    }
+                    this.executeQueueItem(queueItem)
+                        .then(executionResults => {
+                            console.log("Executing Queue Item");
+                            
+                            queueItem.Callback(executionResults);
+
+                            that.executeQueue(resourceType, subIndex, that);
+                        });
+                }
+            } else {
+                console.log("Pool is already being handled");
+            }
+        }
+    }
+
+    executeQueueItem(queueItem: IQueueItem): Promise<Array<any>> {
+        return new Promise<Array<any>>(respond => {
+
+            //Map the list of syncronous functions to a list of callback results.
+            //Since these are being queued, the result will therefore be async.
+            
+            let callbackResults = [];
+
+            queueItem.Executables.map(execution => {
+                let ex = execution();
+                console.log(ex);
+                callbackResults.push(ex);
+            })
+
+            respond(callbackResults);
+        });
+    }
+
     
     insertSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): ISortable {
         if (this.subListPoolExists(resourceType, subIndex)) {
@@ -250,6 +326,8 @@ export default class ResourcePool implements IResourcePool {
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
 
             pool.List.splice(index, 0, resource);
+
+            resource[index] = index;
 
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
 
@@ -271,22 +349,35 @@ export default class ResourcePool implements IResourcePool {
         }
     }
 
-    swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, oldResource: T, newResource: T): ISortable {
-        if (this.subListPoolExists(resourceType, subIndex)) {
-            let pool = this.getSubListPool(resourceType, subIndex);
+    async swapSubListResource<T extends ISortable>(resourceType: string, subIndex: string, oldResource: T, newResource: T): Promise<ISortable> {
+        return new Promise<ISortable> (respond => {
+            if (this.subListPoolExists(resourceType, subIndex)) {
+                let pool = this.getSubListPool(resourceType, subIndex);
 
-            let queue = [
-                new SubListExecutionFunction(this.removeSubListResource(resourceType, subIndex, oldResource)),
-                new SubListExecutionFunction(this.insertSubListResource(resourceType, subIndex, newResource))
-            ]
+                let queue: IQueueItem = {
+                    Executables: [
+                        () => {
+                            return this.removeSubListResource(resourceType, subIndex, oldResource);
+                        },
+                        () => {
+                            console.log("Adding to Queue");
+                            return this.insertSubListResource(resourceType, subIndex, newResource);
+                        }
+                    ],
+                    Callback: executionResults => {
 
-            let video = queue[1];
+                        //the first result corresponds to the insert sub list resource function in the queue
+                        console.log("Execution Results: ");
+                        console.log(executionResults);
+                        let newResource = executionResults[1];
 
-            pool.Queue.addToQueue(queue);
+                        respond(newResource);
+                    }
+                }
 
-            return video.function;
-        } else {
-            throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
-        }
+                this.addToQueue(resourceType, subIndex, queue);
+                this.addToQueue(resourceType, subIndex, queue);
+            }
+        });
     }
 }
