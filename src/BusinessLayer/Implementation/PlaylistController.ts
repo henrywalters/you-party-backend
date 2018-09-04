@@ -107,6 +107,10 @@ export default class PlaylistController {
  
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
+        console.log("OLD & NEW");
+        console.log(video);
+        console.log(modifiedVideo);
+
         let rankedVideo = await this.ResourcePool.swapSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video, modifiedVideo);   
 
         return new Promise<Object> (respond => {

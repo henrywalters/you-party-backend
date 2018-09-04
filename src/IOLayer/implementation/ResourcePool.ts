@@ -80,6 +80,15 @@ export default class ResourcePool implements IResourcePool {
         }
     }
 
+    displayList(list: Array<ISortable>): string {
+        let str = list.map(item => {
+            return item.downvotes + " down - " + item.upvotes + " up - ID: " + item.id + " added at " + item.timeAdded;
+        })
+        let joined = str.join("\n");
+        
+        return joined;
+    }
+
     private poolExists(resourceType: string): boolean {
         if (typeof this.Pools[resourceType] != 'undefined' ) {
             return true;
@@ -200,6 +209,8 @@ export default class ResourcePool implements IResourcePool {
             for (let i = 0; i < pool.Pool.length; i++) { 
                 pool.Pool[i].emit(resourceType, resource);
             }
+
+            
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
@@ -222,6 +233,7 @@ export default class ResourcePool implements IResourcePool {
                 console.log("Emitting: " + resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
+            
             console.log(changeType + " " + resourceType + " : " + resource);
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
@@ -268,8 +280,6 @@ export default class ResourcePool implements IResourcePool {
             that = context;
         }
 
-        console.log(that);
-
         if (that.subListPoolExists(resourceType, subIndex)) {
             let pool = that.getSubListPool(resourceType, subIndex);
 
@@ -291,8 +301,10 @@ export default class ResourcePool implements IResourcePool {
                             console.log("Executing Queue Item");
                             
                             queueItem.Callback(executionResults);
-
-                            that.executeQueue(resourceType, subIndex, that);
+                            that = this;
+                            if (pool.IsHandlingQueue) {
+                                that.executeQueue(resourceType, subIndex, that);
+                            }
                         });
                 }
             } else {
@@ -311,7 +323,6 @@ export default class ResourcePool implements IResourcePool {
 
             queueItem.Executables.map(execution => {
                 let ex = execution();
-                console.log(ex);
                 callbackResults.push(ex);
             })
 
@@ -324,13 +335,13 @@ export default class ResourcePool implements IResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
-
+        
             pool.List.splice(index, 0, resource);
-
-            resource[index] = index;
 
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
 
+            console.log(this.displayList(pool.List));
+            
             return pool.List[index];
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
@@ -360,22 +371,18 @@ export default class ResourcePool implements IResourcePool {
                             return this.removeSubListResource(resourceType, subIndex, oldResource);
                         },
                         () => {
-                            console.log("Adding to Queue");
                             return this.insertSubListResource(resourceType, subIndex, newResource);
                         }
                     ],
                     Callback: executionResults => {
 
                         //the first result corresponds to the insert sub list resource function in the queue
-                        console.log("Execution Results: ");
-                        console.log(executionResults);
                         let newResource = executionResults[1];
 
                         respond(newResource);
                     }
                 }
 
-                this.addToQueue(resourceType, subIndex, queue);
                 this.addToQueue(resourceType, subIndex, queue);
             }
         });

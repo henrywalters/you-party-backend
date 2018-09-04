@@ -34,6 +34,13 @@ class ResourcePool {
             }
         }
     }
+    displayList(list) {
+        let str = list.map(item => {
+            return item.downvotes + " down - " + item.upvotes + " up - ID: " + item.id + " added at " + item.timeAdded;
+        });
+        let joined = str.join("\n");
+        return joined;
+    }
     poolExists(resourceType) {
         if (typeof this.Pools[resourceType] != 'undefined') {
             return true;
@@ -193,7 +200,6 @@ class ResourcePool {
         if (context) {
             that = context;
         }
-        console.log(that);
         if (that.subListPoolExists(resourceType, subIndex)) {
             let pool = that.getSubListPool(resourceType, subIndex);
             console.log("Got pool");
@@ -213,7 +219,10 @@ class ResourcePool {
                         .then(executionResults => {
                         console.log("Executing Queue Item");
                         queueItem.Callback(executionResults);
-                        that.executeQueue(resourceType, subIndex, that);
+                        that = this;
+                        if (pool.IsHandlingQueue) {
+                            that.executeQueue(resourceType, subIndex, that);
+                        }
                     });
                 }
             }
@@ -229,7 +238,6 @@ class ResourcePool {
             let callbackResults = [];
             queueItem.Executables.map(execution => {
                 let ex = execution();
-                console.log(ex);
                 callbackResults.push(ex);
             });
             respond(callbackResults);
@@ -240,8 +248,8 @@ class ResourcePool {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             pool.List.splice(index, 0, resource);
-            resource[index] = index;
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+            console.log(this.displayList(pool.List));
             return pool.List[index];
         }
         else {
@@ -271,19 +279,15 @@ class ResourcePool {
                                 return this.removeSubListResource(resourceType, subIndex, oldResource);
                             },
                             () => {
-                                console.log("Adding to Queue");
                                 return this.insertSubListResource(resourceType, subIndex, newResource);
                             }
                         ],
                         Callback: executionResults => {
                             //the first result corresponds to the insert sub list resource function in the queue
-                            console.log("Execution Results: ");
-                            console.log(executionResults);
                             let newResource = executionResults[1];
                             respond(newResource);
                         }
                     };
-                    this.addToQueue(resourceType, subIndex, queue);
                     this.addToQueue(resourceType, subIndex, queue);
                 }
             });
