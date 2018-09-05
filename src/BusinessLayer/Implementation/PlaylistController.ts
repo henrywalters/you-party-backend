@@ -77,6 +77,8 @@ export default class PlaylistController {
 
     async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {
 
+        console.log("Begin Vote Operation");
+
         const freeVoteTest = true;
 
         let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
@@ -107,9 +109,7 @@ export default class PlaylistController {
  
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        console.log("OLD & NEW");
-        console.log(video);
-        console.log(modifiedVideo);
+        console.log("Begin List Processing Operation");
 
         let rankedVideo = await this.ResourcePool.swapSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video, modifiedVideo);   
 

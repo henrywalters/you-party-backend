@@ -230,7 +230,6 @@ export default class ResourcePool implements IResourcePool {
             console.log(pool.Pool.length + " members in channel");
 
             for (let i = 0; i < pool.Pool.length; i++) {
-                console.log("Emitting: " + resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
             
@@ -296,7 +295,7 @@ export default class ResourcePool implements IResourcePool {
                     if (pool.Queue.length === 0) {
                         pool.IsHandlingQueue = false;
                     }
-                    this.executeQueueItem(queueItem)
+                    this.executeQueueItem(resourceType, subIndex, queueItem)
                         .then(executionResults => {
                             console.log("Executing Queue Item");
                             
@@ -313,7 +312,7 @@ export default class ResourcePool implements IResourcePool {
         }
     }
 
-    executeQueueItem(queueItem: IQueueItem): Promise<Array<any>> {
+    executeQueueItem(resourceType: string, subIndex: string, queueItem: IQueueItem): Promise<Array<any>> {
         return new Promise<Array<any>>(respond => {
 
             //Map the list of syncronous functions to a list of callback results.
@@ -321,13 +320,26 @@ export default class ResourcePool implements IResourcePool {
             
             let callbackResults = [];
 
-            queueItem.Executables.map(execution => {
-                let ex = execution();
-                callbackResults.push(ex);
+            queueItem.Executables.map(ex => {
+                ex.execute = ex.execute.bind(this);
+                let p = ex.parameters;
+                console.log(ex.execute);
+                callbackResults.push(ex.execute(p.resourceType, p.subIndex, p.resource));
             })
 
             respond(callbackResults);
         });
+    }
+
+    inList<T extends ISortable>(list: Array<T>, item: T): boolean {
+        for (let i = 0; i < list.length; i++) {
+            if (item.id === list[i].id) {
+                console.log("Item: ", item, " in list already");
+                return true;
+            } 
+        }
+
+        return false;
     }
 
     
@@ -335,13 +347,19 @@ export default class ResourcePool implements IResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
+
+            if (this.inList(pool.List, resource)) {
+                throw new Error("Item already in list");
+            }
         
             pool.List.splice(index, 0, resource);
 
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
-
+            
             console.log(this.displayList(pool.List));
             
+            
+
             return pool.List[index];
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
@@ -352,7 +370,20 @@ export default class ResourcePool implements IResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
+
+            console.log("removing index: " + index + " out of pool size: " + pool.List.length);
+            console.log("Before: " );
+            console.log(this.displayList(pool.List));
+            if (index >= pool.List.length) {
+                throw new Error("INDEX OUT OF LIST BOUNDS");
+            }
+
             pool.List.splice(index, 1);
+
+            console.log("After: ");
+            console.log(this.displayList(pool.List));
+
+            console.log("Pool Size After: " + pool.List.length);
             this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
         } else {
             console.log("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change")
@@ -364,14 +395,24 @@ export default class ResourcePool implements IResourcePool {
         return new Promise<ISortable> (respond => {
             if (this.subListPoolExists(resourceType, subIndex)) {
                 let pool = this.getSubListPool(resourceType, subIndex);
-
-                let queue: IQueueItem = {
+                let that = this;
+                var queue: IQueueItem = {
                     Executables: [
-                        () => {
-                            return this.removeSubListResource(resourceType, subIndex, oldResource);
+                        {
+                            execute: that.removeSubListResource,
+                            parameters: {
+                                resourceType: resourceType,
+                                subIndex: subIndex,
+                                resource: oldResource
+                            }
                         },
-                        () => {
-                            return this.insertSubListResource(resourceType, subIndex, newResource);
+                        {
+                            execute: that.insertSubListResource,
+                            parameters: {
+                                resourceType: resourceType,
+                                subIndex: subIndex,
+                                resource: oldResource
+                            }
                         }
                     ],
                     Callback: executionResults => {
@@ -382,7 +423,6 @@ export default class ResourcePool implements IResourcePool {
                         respond(newResource);
                     }
                 }
-
                 this.addToQueue(resourceType, subIndex, queue);
             }
         });

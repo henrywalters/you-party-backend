@@ -22,10 +22,10 @@ export default class PlaylistRoutes implements IResourceRouter {
                         video: video
                     })
                 })
-                .catch(() => {
+                .catch((err) => {
                     res.json({
                         success: false,
-                        video: null
+                        video: err
                     })
                 })
 

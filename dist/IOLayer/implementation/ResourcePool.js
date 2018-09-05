@@ -161,7 +161,6 @@ class ResourcePool {
             console.log("SHOULD BE EMITTING: " + resourceType + " sub index: " + subIndex);
             console.log(pool.Pool.length + " members in channel");
             for (let i = 0; i < pool.Pool.length; i++) {
-                console.log("Emitting: " + resourceType);
                 pool.Pool[i].emit(resourceType, resource);
             }
             console.log(changeType + " " + resourceType + " : " + resource);
@@ -215,7 +214,7 @@ class ResourcePool {
                     if (pool.Queue.length === 0) {
                         pool.IsHandlingQueue = false;
                     }
-                    this.executeQueueItem(queueItem)
+                    this.executeQueueItem(resourceType, subIndex, queueItem)
                         .then(executionResults => {
                         console.log("Executing Queue Item");
                         queueItem.Callback(executionResults);
@@ -231,22 +230,36 @@ class ResourcePool {
             }
         }
     }
-    executeQueueItem(queueItem) {
+    executeQueueItem(resourceType, subIndex, queueItem) {
         return new Promise(respond => {
             //Map the list of syncronous functions to a list of callback results.
             //Since these are being queued, the result will therefore be async.
             let callbackResults = [];
-            queueItem.Executables.map(execution => {
-                let ex = execution();
-                callbackResults.push(ex);
+            queueItem.Executables.map(ex => {
+                ex.execute = ex.execute.bind(this);
+                let p = ex.parameters;
+                console.log(ex.execute);
+                callbackResults.push(ex.execute(p.resourceType, p.subIndex, p.resource));
             });
             respond(callbackResults);
         });
+    }
+    inList(list, item) {
+        for (let i = 0; i < list.length; i++) {
+            if (item.id === list[i].id) {
+                console.log("Item: ", item, " in list already");
+                return true;
+            }
+        }
+        return false;
     }
     insertSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
+            if (this.inList(pool.List, resource)) {
+                throw new Error("Item already in list");
+            }
             pool.List.splice(index, 0, resource);
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
             console.log(this.displayList(pool.List));
@@ -260,7 +273,16 @@ class ResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
+            console.log("removing index: " + index + " out of pool size: " + pool.List.length);
+            console.log("Before: ");
+            console.log(this.displayList(pool.List));
+            if (index >= pool.List.length) {
+                throw new Error("INDEX OUT OF LIST BOUNDS");
+            }
             pool.List.splice(index, 1);
+            console.log("After: ");
+            console.log(this.displayList(pool.List));
+            console.log("Pool Size After: " + pool.List.length);
             this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
         }
         else {
@@ -273,13 +295,24 @@ class ResourcePool {
             return new Promise(respond => {
                 if (this.subListPoolExists(resourceType, subIndex)) {
                     let pool = this.getSubListPool(resourceType, subIndex);
-                    let queue = {
+                    let that = this;
+                    var queue = {
                         Executables: [
-                            () => {
-                                return this.removeSubListResource(resourceType, subIndex, oldResource);
+                            {
+                                execute: that.removeSubListResource,
+                                parameters: {
+                                    resourceType: resourceType,
+                                    subIndex: subIndex,
+                                    resource: oldResource
+                                }
                             },
-                            () => {
-                                return this.insertSubListResource(resourceType, subIndex, newResource);
+                            {
+                                execute: that.insertSubListResource,
+                                parameters: {
+                                    resourceType: resourceType,
+                                    subIndex: subIndex,
+                                    resource: oldResource
+                                }
                             }
                         ],
                         Callback: executionResults => {

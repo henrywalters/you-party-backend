@@ -102,6 +102,10 @@ export default class RankHelper {
                     return high;
                 }
 
+                if (list[midpoint].id === item.id) {
+                    return midpoint;
+                }
+
                 let rank = this.Rank(type, list[low], item);
                 if (rank < 0) {
                     rank = this.Rank(type, list[high], item);

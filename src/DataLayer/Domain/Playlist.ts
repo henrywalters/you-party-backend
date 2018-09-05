@@ -65,7 +65,6 @@ export default class Playlist extends DataObject {
     getPlaylistVideoAsync(playlistId: string) {
         return new Promise<IPlaylistVideo> (res => {
             this.getPlaylistVideo(playlistId, (error, video) => {
-                console.log("async returning: " + video);
                 res(video);
             })
         })

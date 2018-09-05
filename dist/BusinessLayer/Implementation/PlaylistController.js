@@ -72,6 +72,7 @@ class PlaylistController {
     }
     voteAsync(guestId, playlistId, type) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("Begin Vote Operation");
             const freeVoteTest = true;
             let video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
             let guests = yield this._Guest.getWhereAsync({ guestId: guestId });
@@ -92,9 +93,7 @@ class PlaylistController {
                 type: type
             });
             let modifiedVideo = yield this._Playlist.getPlaylistVideoAsync(playlistId);
-            console.log("OLD & NEW");
-            console.log(video);
-            console.log(modifiedVideo);
+            console.log("Begin List Processing Operation");
             let rankedVideo = yield this.ResourcePool.swapSubListResource("Party-" + video['partyId'], "Playlist", video, modifiedVideo);
             return new Promise(respond => {
                 respond(rankedVideo);

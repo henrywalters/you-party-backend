@@ -18,10 +18,10 @@ class PlaylistRoutes {
                     video: video
                 });
             })
-                .catch(() => {
+                .catch((err) => {
                 res.json({
                     success: false,
-                    video: null
+                    video: err
                 });
             });
             /*playlist.upvote(user['id'], req.params.playlistId, (error, vote) => {
