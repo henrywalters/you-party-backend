@@ -311,7 +311,7 @@ class ResourcePool {
                                 parameters: {
                                     resourceType: resourceType,
                                     subIndex: subIndex,
-                                    resource: oldResource
+                                    resource: newResource
                                 }
                             }
                         ],

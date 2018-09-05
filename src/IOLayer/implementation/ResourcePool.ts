@@ -411,7 +411,7 @@ export default class ResourcePool implements IResourcePool {
                             parameters: {
                                 resourceType: resourceType,
                                 subIndex: subIndex,
-                                resource: oldResource
+                                resource: newResource
                             }
                         }
                     ],
