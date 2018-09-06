@@ -49,6 +49,45 @@ class RankHelper {
             return this.Rank(type, a, b);
         });
     }
+    /**
+     * @description Searches to find an exact item in a list. Returns -1 if not.
+     * @param type The metric used determine the rank during search.
+     * @param list
+     * @param item
+     */
+    static BinaryExactSearch(type, list, item) {
+        let high = list.length - 1;
+        let low = 0;
+        let midpoint = 0;
+        while (high >= low) {
+            midpoint = Math.floor((high + low) / 2);
+            if (list[midpoint].id === item.id) {
+                return midpoint;
+            }
+            else {
+                /*
+                    rank(a, b) -> rank(b) - rank(a) so if r > 0 b > a.
+                    HOWEVER, because the list is sorted in descending rank,
+                    we will want to take the inverse to be true.
+
+                    Example:
+
+                    list = [9, 7, 5, 3, 1];
+                    item = 3;
+
+                    rank(5, 3) = -2; -> then the low becomes the midpoint.
+                */
+                let rank = this.Rank(type, list[midpoint], item);
+                if (rank < 0) {
+                    low = midpoint;
+                }
+                else {
+                    high = midpoint;
+                }
+            }
+        }
+        return -1;
+    }
     static BinarySearch(type, list, item) {
         var low = 0;
         var midpoint = 0;
@@ -57,9 +96,6 @@ class RankHelper {
             return 0;
         }
         if (list.length === 1) {
-            if (list[0].id === item.id) {
-                return 0;
-            }
             let rank = this.Rank(type, list[0], item);
             if (rank < 0) {
                 return 1;
@@ -70,15 +106,6 @@ class RankHelper {
         }
         while (low < high) {
             if (high - low === 1) {
-                if (list[low].id === item.id) {
-                    return low;
-                }
-                if (list[high].id === item.id) {
-                    return high;
-                }
-                if (list[midpoint].id === item.id) {
-                    return midpoint;
-                }
                 let rank = this.Rank(type, list[low], item);
                 if (rank < 0) {
                     rank = this.Rank(type, list[high], item);
@@ -94,9 +121,6 @@ class RankHelper {
                 }
             }
             midpoint = ((high - low) % 2 === 0) ? (high + low) / 2.0 : ((high + low) - 1) / 2;
-            if (list[midpoint].id === item.id) {
-                return midpoint;
-            }
             let rank = this.Rank(type, list[midpoint], item);
             if (rank < 0) {
                 low = midpoint;

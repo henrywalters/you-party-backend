@@ -262,7 +262,6 @@ class ResourcePool {
             }
             pool.List.splice(index, 0, resource);
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
-            console.log(this.displayList(pool.List));
             return pool.List[index];
         }
         else {
@@ -272,18 +271,17 @@ class ResourcePool {
     removeSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
-            console.log("removing index: " + index + " out of pool size: " + pool.List.length);
-            console.log("Before: ");
-            console.log(this.displayList(pool.List));
+            let index = RankHelper_2.default.BinaryExactSearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             if (index >= pool.List.length) {
                 throw new Error("INDEX OUT OF LIST BOUNDS");
             }
-            pool.List.splice(index, 1);
-            console.log("After: ");
-            console.log(this.displayList(pool.List));
-            console.log("Pool Size After: " + pool.List.length);
-            this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+            if (index === -1) {
+                throw new Error("List item was not in list - nothing happening");
+            }
+            else {
+                pool.List.splice(index, 1);
+                this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+            }
         }
         else {
             console.log("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");

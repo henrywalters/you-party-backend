@@ -356,9 +356,6 @@ export default class ResourcePool implements IResourcePool {
 
             this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
             
-            console.log(this.displayList(pool.List));
-            
-            
 
             return pool.List[index];
         } else {
@@ -369,22 +366,17 @@ export default class ResourcePool implements IResourcePool {
     removeSubListResource<T extends ISortable>(resourceType: string, subIndex: string, resource: T): void {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
-            let index = RankHelper.BinarySearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
-
-            console.log("removing index: " + index + " out of pool size: " + pool.List.length);
-            console.log("Before: " );
-            console.log(this.displayList(pool.List));
+            let index = RankHelper.BinaryExactSearch(RankTypes["Wilson Lower Bound"], pool.List, resource);
             if (index >= pool.List.length) {
                 throw new Error("INDEX OUT OF LIST BOUNDS");
             }
 
-            pool.List.splice(index, 1);
-
-            console.log("After: ");
-            console.log(this.displayList(pool.List));
-
-            console.log("Pool Size After: " + pool.List.length);
-            this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+            if (index === -1) {
+                throw new Error("List item was not in list - nothing happening");
+            } else {
+                pool.List.splice(index, 1);
+                this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+            }
         } else {
             console.log("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change")
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
