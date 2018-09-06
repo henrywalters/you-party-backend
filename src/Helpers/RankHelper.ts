@@ -176,6 +176,15 @@ export default class RankHelper {
         return midpoint;
     }
 
+    static LinearExactSearch(type: RankTypes, list: Array<ISortable>, item: ISortable): number {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === item.id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     static LinearSearch(type: RankTypes, list: Array<ISortable>, item: ISortable): number {
         if (list.length === 0) {
             return 0;

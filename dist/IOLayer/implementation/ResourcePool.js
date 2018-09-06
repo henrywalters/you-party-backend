@@ -277,12 +277,18 @@ class ResourcePool {
                 throw new Error("INDEX OUT OF LIST BOUNDS");
             }
             if (index === -1) {
-                throw new Error("List item was not in list - nothing happening");
-                console.log("List item was not in list - nothing happening");
+                console.log("Binary Search Failed - Falling back to Linear to attempt to resolve");
             }
             else {
-                pool.List.splice(index, 1);
-                this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+                index = RankHelper_2.default.LinearExactSearch(RankHelper_1.RankTypes['Wilson Lower Bound'], pool.List, resource);
+                if (index === -1) {
+                    console.log("Linear Search Failed - Doing Nothing");
+                    throw new Error("Binary Search & Backup Linear Search both failed - Something is wrong");
+                }
+                else {
+                    pool.List.splice(index, 1);
+                    this.subListResourceChange(resourceType, subIndex, "remove", index, resource);
+                }
             }
         }
         else {

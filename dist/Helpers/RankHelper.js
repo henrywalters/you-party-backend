@@ -147,6 +147,14 @@ class RankHelper {
         }
         return midpoint;
     }
+    static LinearExactSearch(type, list, item) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === item.id) {
+                return i;
+            }
+        }
+        return -1;
+    }
     static LinearSearch(type, list, item) {
         if (list.length === 0) {
             return 0;
