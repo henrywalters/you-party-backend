@@ -79,7 +79,7 @@ export default class RankHelper {
         let midpoint = 0;
         
         while (high > low) {
-            midpoint = Math.floor((high + low) / 2);
+            midpoint = ((high - low) % 2 === 0) ? (high + low) / 2.0 : ((high + low) - 1) / 2;
             console.log("Low: " + low + " Mid: " + midpoint + " High: " + high);
             console.log(list);
             console.log(item);
