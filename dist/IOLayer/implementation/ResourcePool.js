@@ -272,11 +272,13 @@ class ResourcePool {
         if (this.subListPoolExists(resourceType, subIndex)) {
             let pool = this.getSubListPool(resourceType, subIndex);
             let index = RankHelper_2.default.BinaryExactSearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
+            console.log("Index: " + index);
             if (index >= pool.List.length) {
                 throw new Error("INDEX OUT OF LIST BOUNDS");
             }
             if (index === -1) {
                 throw new Error("List item was not in list - nothing happening");
+                console.log("List item was not in list - nothing happening");
             }
             else {
                 pool.List.splice(index, 1);
