@@ -8,6 +8,7 @@ const Party_1 = require("./DataLayer/Domain/Party");
 const Playlist_1 = require("./DataLayer/Domain/Playlist");
 const RankHelper_1 = require("./Helpers/RankHelper");
 const PlaylistController_1 = require("./BusinessLayer/Implementation/PlaylistController");
+const Events = require("events");
 class App {
     constructor(datasource, resourcepool, routes) {
         this.express = express();
@@ -43,6 +44,15 @@ class App {
                     resourcepool.createSubPool("Party-" + party['id'], "Votes");
                 });
             });
+        });
+        let events = new Events.EventEmitter();
+        events.on('list-sync-failure', (resource) => {
+            console.log("LIST SYNC FAILED");
+            console.log(resource);
+        });
+        events.on('list-sync-success', (resource) => {
+            console.log("LIST SYNC SUCCEEDED");
+            console.log(resource);
         });
         //initialize socket server
         this.Server = http_1.createServer(this.express);

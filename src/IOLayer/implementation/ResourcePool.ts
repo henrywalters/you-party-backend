@@ -350,13 +350,26 @@ export default class ResourcePool implements IResourcePool {
 
             if (this.inList(pool.List, resource)) {
                 throw new Error("Item already in list");
+                
+                
+                console.log("Emitting Event to resync list");
+
+                let emitter = new Events.EventEmitter();
+                emitter.emit('list-sync-failure', {
+                    resourceType: resourceType,
+                    subIndex: subIndex
+                });
+            } else {
+                pool.List.splice(index, 0, resource);
+                this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+
+                let emitter = new Events.EventEmitter();
+                emitter.emit('list-sync-success', {
+                    resourceType: resourceType,
+                    subIndex: subIndex
+                });
             }
         
-            pool.List.splice(index, 0, resource);
-
-            this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
-            
-
             return pool.List[index];
         } else {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");

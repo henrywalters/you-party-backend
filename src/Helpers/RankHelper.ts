@@ -80,9 +80,7 @@ export default class RankHelper {
         
         while (high > low) {
             midpoint = ((high - low) % 2 === 0) ? (high + low) / 2.0 : ((high + low) - 1) / 2;
-            console.log("Low: " + low + " Mid: " + midpoint + " High: " + high);
-            console.log(list);
-            console.log(item);
+
             if (list[midpoint].id === item.id) {
                 return midpoint;
             } else {
@@ -113,7 +111,7 @@ export default class RankHelper {
                 */  
 
                 let rank = this.Rank(type, list[midpoint], item);
-                console.log("Rank: " + rank);
+
                 if (rank < 0) {
                     low = midpoint;
                 } else {

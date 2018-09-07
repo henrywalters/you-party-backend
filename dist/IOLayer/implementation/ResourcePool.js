@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Events = require("events");
 const RankHelper_1 = require("../../Helpers/RankHelper");
 const RankHelper_2 = require("../../Helpers/RankHelper");
 class SubListExecutionFunction {
@@ -259,9 +260,22 @@ class ResourcePool {
             let index = RankHelper_2.default.BinarySearch(RankHelper_1.RankTypes["Wilson Lower Bound"], pool.List, resource);
             if (this.inList(pool.List, resource)) {
                 throw new Error("Item already in list");
+                console.log("Emitting Event to resync list");
+                let emitter = new Events.EventEmitter();
+                emitter.emit('list-sync-failure', {
+                    resourceType: resourceType,
+                    subIndex: subIndex
+                });
             }
-            pool.List.splice(index, 0, resource);
-            this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+            else {
+                pool.List.splice(index, 0, resource);
+                this.subListResourceChange(resourceType, subIndex, "insert", index, resource);
+                let emitter = new Events.EventEmitter();
+                emitter.emit('list-sync-success', {
+                    resourceType: resourceType,
+                    subIndex: subIndex
+                });
+            }
             return pool.List[index];
         }
         else {

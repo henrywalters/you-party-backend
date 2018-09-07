@@ -14,6 +14,7 @@ import Party from './DataLayer/Domain/Party';
 import Playlist from './DataLayer/Domain/Playlist';
 import { RankTypes } from './Helpers/RankHelper';
 import PlaylistController from './BusinessLayer/Implementation/PlaylistController';
+import * as Events from 'events';
 
 class App {
   	public express;
@@ -64,7 +65,18 @@ class App {
 			})
 		})
 		
-	
+		let events = new Events.EventEmitter();
+
+		events.on('list-sync-failure', (resource) => {
+			console.log("LIST SYNC FAILED");
+			console.log(resource);
+		})
+		
+		events.on('list-sync-success', (resource) => {
+			console.log("LIST SYNC SUCCEEDED");
+			console.log(resource);
+		})
+
 		//initialize socket server
 
 		this.Server = createServer(this.express);
