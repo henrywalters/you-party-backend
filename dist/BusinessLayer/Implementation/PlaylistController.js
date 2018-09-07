@@ -64,6 +64,12 @@ class PlaylistController {
             cb(error, res);
         });
     }
+    getMySortedPlaylist(userId, partyId, rankType, cb) {
+        this._Playlist.getMyPlaylist(userId, partyId, (error, playlist) => {
+            playlist = RankHelper_1.default.Sort(rankType, playlist);
+            cb(error, playlist);
+        });
+    }
     getSortedPlaylist(partyId, rankType, cb) {
         this._Playlist.getPlaylist(partyId, (error, playlist) => {
             playlist = RankHelper_1.default.Sort(rankType, playlist);
@@ -87,7 +93,13 @@ class PlaylistController {
             let addVote = true;
             if (votes.length > 1 && !freeVoteTest) {
                 console.log("Already voted on video");
-                throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
+                for (let i = 0; i < votes.length; i++) {
+                    yield this._Vote.destroyAsync(votes[i]['id']);
+                }
+                return new Promise(res => {
+                    throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
+                    res("Vote failure");
+                });
             }
             if (votes.length === 1) {
                 let oldType = votes[0]['type'];

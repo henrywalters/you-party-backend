@@ -53,7 +53,7 @@ export default class VideoRoutes implements IResourceRouter {
             let user = auth.getSelf(req);
             party.currentParty(user['id'], (error, party) => {
                 if (!error) {
-                    playlist.getSortedPlaylist(party['id'], RankTypes["Wilson Lower Bound"], (error, playlist) => {
+                    playlist.getMySortedPlaylist(user['id'], party['id'], RankTypes["Wilson Lower Bound"], (error, playlist) => {
                         if (error) {
                             res.json({
                                 success: false

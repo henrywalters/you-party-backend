@@ -68,6 +68,13 @@ export default class PlaylistController {
         })
     }
 
+    getMySortedPlaylist(userId: string, partyId: string, rankType: RankTypes, cb: {(error: string, playlist: Array<Object>): void}) {
+        this._Playlist.getMyPlaylist(userId, partyId, (error, playlist) => {
+            playlist = RankHelper.Sort(rankType, playlist);
+            cb(error, playlist);
+        })
+    }
+
     getSortedPlaylist(partyId: string, rankType: RankTypes, cb: {(error: string, playlist: Array<Object>): void}) {
         this._Playlist.getPlaylist(partyId, (error, playlist) => {
             playlist = RankHelper.Sort(rankType, playlist);
@@ -102,7 +109,14 @@ export default class PlaylistController {
 
         if (votes.length > 1 && !freeVoteTest) {
             console.log("Already voted on video");
-            throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
+            for (let i = 0; i < votes.length; i++) {
+                await this._Vote.destroyAsync(votes[i]['id']);
+            }
+            return new Promise<Object> (res => {
+                throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
+                res("Vote failure");
+            })
+            
         }
         
         if (votes.length === 1) {

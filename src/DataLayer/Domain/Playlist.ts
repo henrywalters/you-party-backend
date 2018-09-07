@@ -54,6 +54,38 @@ export default class Playlist extends DataObject {
         })
     }
 
+    getMyPlaylist(userId: string, partyId: string, cb: {(error, res): void}) {
+        let sql = `
+            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, P.timeAdded,
+            CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
+            CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes,
+            CASE WHEN UP.guestId = ? THEN 'up' WHEN DOWN.guestId = ? THEN 'down' ELSE NULL END AS myVote
+            FROM (
+                (
+                    SELECT * FROM Playlists WHERE partyId = ? AND STATUS = 'queued'
+                ) P
+                INNER JOIN
+                (
+                    SELECT * FROM Videos
+                ) V ON V.id = P.videoId
+                LEFT JOIN
+                (
+                    SELECT COUNT(id) upvotes, playlistId, guestId FROM Votes WHERE type = 'up' GROUP BY playlistId
+                ) UP ON UP.playlistId = P.id
+                LEFT JOIN
+                (
+                    SELECT COUNT(id) downvotes, playlistId, guestId FROM Votes WHERE type = 'down' GROUP BY playlistId
+                ) DOWN ON DOWN.playlistId = P.id
+            )
+        `
+
+        sql = mysql.format(sql, [userId, userId, partyId]);
+
+        this.query(sql, (error, res) => {
+            cb(error, res);
+        })
+    }
+
     getPlaylistAsync(partyId: string) {
         return new Promise<Array<IPlaylistVideo>> (res => {
             this.getPlaylist(partyId, (error, playlist) => {
