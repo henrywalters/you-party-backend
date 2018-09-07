@@ -79,33 +79,53 @@ export default class PlaylistController {
 
         console.log("Begin Vote Operation");
 
-        const freeVoteTest = true;
+        const freeVoteTest = false;
 
         let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
+        console.log(video);
+
         let guests = await this._Guest.getWhereAsync({guestId: guestId});
 
+        console.log(guests);
+
         if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
+            console.log("Guest not in party");
             throw new Error("Guest does not exist/is not in party");
         }
 
         let votes = await this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId});
 
-        if (votes.length > 0 && !freeVoteTest) {
+        console.log(votes);
 
-            //By design, there should never be more than 1 vote (except if freeVoteTest is set to true) 
-            //But just to be safe, we will destroy "all" votes
+        let addVote = true;
 
-            await votes.map(vote => {
-                this._Vote.destroyAsync(vote['id']);
-            })
+        if (votes.length > 1 && !freeVoteTest) {
+            console.log("Already voted on video");
+            throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
         }
+        
+        if (votes.length === 1) {
+            let oldType = votes[0]['type'];
 
-        let vote = await this._Vote.createAsync({
-            guestId: guestId,
-            playlistId: playlistId,
-            type: type
-        });
+            console.log("Destroying Vote");
+
+            await this._Vote.destroyAsync(votes[0]['id']).catch((error) => {console.log(error)});
+
+            if (oldType === type) {
+                addVote = false;
+            }
+        }
+        
+        console.log("Am voting");
+
+        if (addVote) {
+            let vote = await this._Vote.createAsync({
+                guestId: guestId,
+                playlistId: playlistId,
+                type: type
+            });
+        }
  
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
 

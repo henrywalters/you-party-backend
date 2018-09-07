@@ -83,6 +83,7 @@ class MySQL {
         });
         sql += sqlQs.join(" AND ");
         sql = mysql.format(sql, inserts);
+        console.log(sql);
         this.Connection.query(sql, (error, rows, fields) => {
             if (error) {
                 callback(true, null);

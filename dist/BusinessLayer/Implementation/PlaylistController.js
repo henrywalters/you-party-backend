@@ -73,25 +73,38 @@ class PlaylistController {
     voteAsync(guestId, playlistId, type) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Begin Vote Operation");
-            const freeVoteTest = true;
+            const freeVoteTest = false;
             let video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
+            console.log(video);
             let guests = yield this._Guest.getWhereAsync({ guestId: guestId });
+            console.log(guests);
             if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
+                console.log("Guest not in party");
                 throw new Error("Guest does not exist/is not in party");
             }
             let votes = yield this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId });
-            if (votes.length > 0 && !freeVoteTest) {
-                //By design, there should never be more than 1 vote (except if freeVoteTest is set to true) 
-                //But just to be safe, we will destroy "all" votes
-                yield votes.map(vote => {
-                    this._Vote.destroyAsync(vote['id']);
+            console.log(votes);
+            let addVote = true;
+            if (votes.length > 1 && !freeVoteTest) {
+                console.log("Already voted on video");
+                throw new Error("Video already has a vote but freeVoteTest is false. This should never happen");
+            }
+            if (votes.length === 1) {
+                let oldType = votes[0]['type'];
+                console.log("Destroying Vote");
+                yield this._Vote.destroyAsync(votes[0]['id']).catch((error) => { console.log(error); });
+                if (oldType === type) {
+                    addVote = false;
+                }
+            }
+            console.log("Am voting");
+            if (addVote) {
+                let vote = yield this._Vote.createAsync({
+                    guestId: guestId,
+                    playlistId: playlistId,
+                    type: type
                 });
             }
-            let vote = yield this._Vote.createAsync({
-                guestId: guestId,
-                playlistId: playlistId,
-                type: type
-            });
             let modifiedVideo = yield this._Playlist.getPlaylistVideoAsync(playlistId);
             console.log("Begin List Processing Operation");
             let rankedVideo = yield this.ResourcePool.swapSubListResource("Party-" + video['partyId'], "Playlist", video, modifiedVideo);
