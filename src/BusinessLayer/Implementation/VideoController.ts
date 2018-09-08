@@ -25,18 +25,20 @@ export default class VideoController {
                 if (video.length === 0) {
                     cb("No Video is Playing", null);
                 } else {
-                    let playing = video[0];
-                    let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
-                    if (pool !== null) {
-                        let event = pool.EventTimer;
+                    this._Playlist.getPlaylistVideo(video[0]['id'], (error, video) => { 
+                        let playing = video;
+                        let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
+                        if (pool !== null) {
+                            let event = pool.EventTimer;
 
-                        playing['timeElapsed'] = event.getElapsedTime();
-                        playing['timeRemaining'] = event.getRemainingTime();
+                            playing['timeElapsed'] = event.getElapsedTime();
+                            playing['timeRemaining'] = event.getRemainingTime();
 
-                        cb(null, playing);
-                    } else {
-                        cb("Can't get elapsed time", null);
-                    }
+                            cb(null, playing);
+                        } else {
+                            cb("Can't get elapsed time", null);
+                        }
+                    })
                 }
             }
         })
