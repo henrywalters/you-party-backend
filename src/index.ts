@@ -13,6 +13,7 @@ import Config from './Helpers/ConfigHelper';
 import PlaylistRoutes from './IOLayer/implementation/PlaylistRoutes';
 import RankHelper, { RankTypes } from './Helpers/RankHelper';
 import TestRoutes from './IOLayer/implementation/TestRoutes';
+import { EventTimer } from './IOLayer/implementation/EventTimer';
 
 
 
@@ -21,11 +22,7 @@ const port = 8080
 
 let db = new MySQL();
 
-let v = new VideoSearchController(db);
 
-v.search('tool', videos => {
-    console.log(videos);
-})
 let mainApp = new App(db, new ResourcePool(
     [
         "Party"

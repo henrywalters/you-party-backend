@@ -9,6 +9,7 @@ const Playlist_1 = require("./DataLayer/Domain/Playlist");
 const RankHelper_1 = require("./Helpers/RankHelper");
 const PlaylistController_1 = require("./BusinessLayer/Implementation/PlaylistController");
 const Events = require("events");
+const VideoController_1 = require("./BusinessLayer/Implementation/VideoController");
 class App {
     constructor(datasource, resourcepool, routes) {
         this.express = express();
@@ -23,11 +24,13 @@ class App {
         let playlistObject = new Playlist_1.default();
         playlistObject.setDataSource(this.DataSource);
         let playlistController = new PlaylistController_1.default(this.DataSource, this.ResourcePool);
+        let videoController = new VideoController_1.default(this.DataSource, this.ResourcePool);
         partyObject.getAll((error, parties) => {
             console.log("Got Parties");
             parties.map(party => {
                 playlistController.getSortedPlaylist(party['id'], RankHelper_1.RankTypes["Wilson Lower Bound"], (error, playlist) => {
                     let sortablePlaylist = playlist.map(video => {
+                        console.log(video);
                         return {
                             id: video['id'],
                             upvotes: video['upvotes'],
@@ -36,12 +39,18 @@ class App {
                             title: video['title'],
                             videoId: video['videoId'],
                             descriptino: video['description'],
-                            videoKey: video['videoKey']
+                            videoKey: video['videoKey'],
+                            duration: video['duration'],
+                            licensedContent: video['licensedContent']
                         };
                     });
                     resourcepool.createPool("Party-" + party['id']);
                     resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], sortablePlaylist);
                     resourcepool.createSubPool("Party-" + party['id'], "Votes");
+                    resourcepool.createSubPool("Party-" + party['id'], "Video");
+                    videoController.playNextVideo(party['id'], (error, video) => {
+                        console.log(error, video);
+                    });
                 });
             });
         });

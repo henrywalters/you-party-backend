@@ -15,6 +15,7 @@ import Playlist from './DataLayer/Domain/Playlist';
 import { RankTypes } from './Helpers/RankHelper';
 import PlaylistController from './BusinessLayer/Implementation/PlaylistController';
 import * as Events from 'events';
+import VideoController from './BusinessLayer/Implementation/VideoController';
 
 class App {
   	public express;
@@ -41,12 +42,16 @@ class App {
 		playlistObject.setDataSource(this.DataSource);
 
 		let playlistController = new PlaylistController(this.DataSource, this.ResourcePool);
+		let videoController = new VideoController(this.DataSource, this.ResourcePool);
+
 
 		partyObject.getAll((error, parties) => {
 			console.log("Got Parties");
 			parties.map(party => {				
 				playlistController.getSortedPlaylist(party['id'], RankTypes["Wilson Lower Bound"], (error, playlist) => {
 					let sortablePlaylist = playlist.map(video => {
+
+						console.log(video);
 						return {
 							id: video['id'],
 							upvotes: video['upvotes'],
@@ -55,12 +60,19 @@ class App {
 							title: video['title'],
 							videoId: video['videoId'],
 							descriptino: video['description'],
-							videoKey: video['videoKey']
+							videoKey: video['videoKey'],
+							duration: video['duration'],
+							licensedContent: video['licensedContent']
 						}
 					})
 					resourcepool.createPool("Party-" + party['id']);
 					resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankTypes["Wilson Lower Bound"], sortablePlaylist);
 					resourcepool.createSubPool("Party-" + party['id'], "Votes");
+					resourcepool.createSubPool("Party-" + party['id'], "Video");
+
+					videoController.playNextVideo(party['id'], (error, video) => {
+						console.log(error, video);
+					})
 				})	
 			})
 		})

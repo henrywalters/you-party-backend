@@ -19,10 +19,10 @@ interface IPool {
     }
 }
 
-interface ISubPool {
+export interface ISubPool {
     SubIndex: string,
     Pool: Array<SocketIO.Socket>
-    EventTimer?: EventTimer;
+    EventTimer: EventTimer;
 }
 
 interface ISubListPool {
@@ -121,11 +121,11 @@ export default class ResourcePool implements IResourcePool {
         return this.Pools[resourceType];
     }
 
-    private getSubPool(resourceType: string, subIndex: string) {
+    public getSubPool(resourceType: string, subIndex: string): ISubPool {
         return this.Pools[resourceType].SubPools[subIndex];
     }
 
-    private getSubListPool(resourceType: string, subIndex: string) {
+    public getSubListPool(resourceType: string, subIndex: string) {
         return this.Pools[resourceType].SubListPools[subIndex];
     }
 
@@ -146,7 +146,8 @@ export default class ResourcePool implements IResourcePool {
         if (!this.getSubPool(resourceType, subIndex)) {
             this.Pools[resourceType].SubPools[subIndex] = {
                 SubIndex: subIndex,
-                Pool: []
+                Pool: [],
+                EventTimer: new EventTimer()
             }
 
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
@@ -240,6 +241,7 @@ export default class ResourcePool implements IResourcePool {
             throw new Error("Resource Type: " + resourceType + " - " + subIndex + " does not exist. Therefore resource can not change");
         }
     }
+
 
     public createResource(resourceType: string, resource: Object) {
         this.resourceChange(resourceType, "create", resource);
@@ -342,6 +344,16 @@ export default class ResourcePool implements IResourcePool {
         }
 
         return false;
+    }
+
+    
+    public getSubListResource(resourceType: string, subIndex: string, index: number): ISortable {
+        let pool = this.getSubListPool(resourceType, subIndex);
+        if (typeof pool.List[index] === 'undefined') {
+            return null;
+        } else {
+            return pool.List[index];
+        }
     }
 
     

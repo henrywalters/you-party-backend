@@ -7,6 +7,7 @@ import Vote from '../../DataLayer/Domain/Vote';
 import { RankTypes, ISortable } from '../../Helpers/RankHelper';
 import RankHelper from '../../Helpers/RankHelper';
 import { IPlaylistVideo } from '../../DataLayer/Domain/Playlist';
+import VideoController from './VideoController';
 
 export default class PlaylistController {
     private DataSource: IQueryable;
@@ -15,6 +16,8 @@ export default class PlaylistController {
     private _Party: Party;
     private _Guest: PartyGuest;
     private _Vote: Vote;
+
+    private _VideoController: VideoController;
     
     constructor(ds: IQueryable, resourcePool: IResourcePool) {
         this.DataSource = ds;
@@ -26,6 +29,8 @@ export default class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote();
         this._Vote.setDataSource(ds);
+
+        this._VideoController = new VideoController(this.DataSource, this.ResourcePool);
 
         this.ResourcePool = resourcePool;
     }
@@ -51,7 +56,10 @@ export default class PlaylistController {
                                 console.log(video);
                                 console.log("Successfully added, searching video in palylist");
                                 this._Playlist.getPlaylistVideo(video['id'], (error, video) => {
-                                    video = this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video)
+                                    video = this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video);
+                                    this._VideoController.playNextVideo(partyId, (error, video) => {
+                                        
+                                    })
                                     cb(null, video);
                                 })
                             }
@@ -61,6 +69,8 @@ export default class PlaylistController {
             }
         })
     }
+
+    
 
     getPlaylist(partyId: string, cb: {(error: string, playlist: Array<Object>): void}) {
         this._Playlist.getPlaylist(partyId, (error, res) => {
@@ -80,6 +90,11 @@ export default class PlaylistController {
             playlist = RankHelper.Sort(rankType, playlist);
             cb(error, playlist);
         })
+    }
+
+    getNextPlaylistVideo(partyId: string): ISortable {
+        let video = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
+        return video;
     }
 
     async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {

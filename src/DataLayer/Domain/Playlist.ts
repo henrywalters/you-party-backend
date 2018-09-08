@@ -25,7 +25,7 @@ export default class Playlist extends DataObject {
 
     getPlaylist(partyId: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, P.timeAdded,
+            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, P.timeAdded, V.duration, V.licensedContent,
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (
@@ -56,7 +56,7 @@ export default class Playlist extends DataObject {
 
     getMyPlaylist(userId: string, partyId: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, P.timeAdded,
+            SELECT P.id, P.partyId, P.videoId, V.title, V.description, V.videoKey, P.timeAdded, V.duration, V.licensedContent,
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes,
             CASE WHEN UP.guestId = ? THEN 'up' WHEN DOWN.guestId = ? THEN 'down' ELSE NULL END AS myVote
@@ -104,7 +104,7 @@ export default class Playlist extends DataObject {
 
     getPlaylistVideo(id: string, cb: {(error, res): void}) {
         let sql = `
-            SELECT P.id, P.partyId,  P.videoId,V.title, V.description, V.videoKey, P.timeAdded,
+            SELECT P.id, P.partyId,  P.videoId,V.title, V.description, V.videoKey, P.timeAdded, V.duration, V.licensedContent,
             CASE WHEN UP.upvotes IS NULL THEN 0 ELSE UP.upvotes END AS upvotes,
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (

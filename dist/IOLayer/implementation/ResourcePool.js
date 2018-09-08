@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Events = require("events");
 const RankHelper_1 = require("../../Helpers/RankHelper");
 const RankHelper_2 = require("../../Helpers/RankHelper");
+const EventTimer_1 = require("./EventTimer");
 class SubListExecutionFunction {
     constructor(func, parameters) {
         this.parameters = parameters;
@@ -90,7 +91,8 @@ class ResourcePool {
         if (!this.getSubPool(resourceType, subIndex)) {
             this.Pools[resourceType].SubPools[subIndex] = {
                 SubIndex: subIndex,
-                Pool: []
+                Pool: [],
+                EventTimer: new EventTimer_1.EventTimer()
             };
             console.log("Created Pool: " + resourceType + " sub: " + subIndex);
         }
@@ -253,6 +255,15 @@ class ResourcePool {
             }
         }
         return false;
+    }
+    getSubListResource(resourceType, subIndex, index) {
+        let pool = this.getSubListPool(resourceType, subIndex);
+        if (typeof pool.List[index] === 'undefined') {
+            return null;
+        }
+        else {
+            return pool.List[index];
+        }
     }
     insertSubListResource(resourceType, subIndex, resource) {
         if (this.subListPoolExists(resourceType, subIndex)) {

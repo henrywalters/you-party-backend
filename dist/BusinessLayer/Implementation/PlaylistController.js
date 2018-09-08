@@ -13,6 +13,7 @@ const Party_1 = require("../../DataLayer/Domain/Party");
 const PartyGuest_1 = require("../../DataLayer/Domain/PartyGuest");
 const Vote_1 = require("../../DataLayer/Domain/Vote");
 const RankHelper_1 = require("../../Helpers/RankHelper");
+const VideoController_1 = require("./VideoController");
 class PlaylistController {
     constructor(ds, resourcePool) {
         this.DataSource = ds;
@@ -24,6 +25,7 @@ class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote_1.default();
         this._Vote.setDataSource(ds);
+        this._VideoController = new VideoController_1.default(this.DataSource, this.ResourcePool);
         this.ResourcePool = resourcePool;
     }
     addToPlaylist(guestId, partyId, videoId, cb) {
@@ -50,6 +52,8 @@ class PlaylistController {
                                 console.log("Successfully added, searching video in palylist");
                                 this._Playlist.getPlaylistVideo(video['id'], (error, video) => {
                                     video = this.ResourcePool.insertSubListResource("Party-" + partyId, "Playlist", video);
+                                    this._VideoController.playNextVideo(partyId, (error, video) => {
+                                    });
                                     cb(null, video);
                                 });
                             }
@@ -75,6 +79,10 @@ class PlaylistController {
             playlist = RankHelper_1.default.Sort(rankType, playlist);
             cb(error, playlist);
         });
+    }
+    getNextPlaylistVideo(partyId) {
+        let video = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
+        return video;
     }
     voteAsync(guestId, playlistId, type) {
         return __awaiter(this, void 0, void 0, function* () {

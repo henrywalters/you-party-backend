@@ -25,6 +25,7 @@ class PartyController {
                 this._Party.ResourcePool.createPool("Party-" + party['id']);
                 this._Party.ResourcePool.createSubListPool("Party-" + party['id'], "Playlist", RankHelper_1.RankTypes["Wilson Lower Bound"], []);
                 this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Votes");
+                this._Party.ResourcePool.createSubPool("Party-" + party['id'], "Video");
             }
         });
     }
