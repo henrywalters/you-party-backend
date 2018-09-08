@@ -39,7 +39,7 @@ export default class VideoController {
                             cb("Can't get elapsed time", null);
                         }
                     })
-                }
+                }  
             }
         })
     }
