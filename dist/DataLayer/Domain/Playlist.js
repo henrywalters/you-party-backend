@@ -91,7 +91,7 @@ class Playlist extends DataObject_1.default {
             CASE WHEN DOWN.downvotes IS NULL THEN 0 ELSE DOWN.downvotes END AS downvotes
             FROM (
                 (
-                    SELECT * FROM Playlists WHERE id = ? AND STATUS = 'queued'
+                    SELECT * FROM Playlists WHERE id = ?
                 ) P
                 INNER JOIN
                 (

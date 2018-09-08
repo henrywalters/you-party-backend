@@ -16,7 +16,9 @@ class VideoController {
                     cb("No Video is Playing", null);
                 }
                 else {
+                    console.log(video[0]);
                     this._Playlist.getPlaylistVideo(video[0]['id'], (error, video) => {
+                        console.log(video);
                         let playing = video;
                         let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
                         if (pool !== null) {
