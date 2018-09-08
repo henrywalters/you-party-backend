@@ -13,7 +13,7 @@ class VideoQuery extends DataObject_1.default {
     }
     getQueryVideos(query, cb) {
         let sql = `
-            SELECT Video.id, Video.videoKey, Video.title, Video.description, Video.thumbnail FROM (
+            SELECT Video.id, Video.videoKey, Video.title, Video.description, Video.thumbnail, Video.duration, Video.licensedContent FROM (
                 (
                     SELECT * FROM VideoQueries WHERE ?? = ?
                 ) Queries 

@@ -46,17 +46,16 @@ class VideoController {
             }
             else {
                 let nextVideo = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
-                nextVideo['eventType'] = 'new';
-                this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
                 if (nextVideo !== null) {
+                    nextVideo['eventType'] = 'new';
+                    this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
                     this.setVideoStatus(nextVideo['id'], 'playing', (error) => {
                         if (!error) {
                             this.ResourcePool.removeSubListResource("Party-" + partyId, "Playlist", nextVideo);
                             let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
                             if (pool !== null) {
                                 let event = pool.EventTimer;
-                                event.newEvent(10000, //nextVideo['duration'] * 1000, 
-                                () => {
+                                event.newEvent(nextVideo['duration'] * 1000, () => {
                                     nextVideo['eventType'] = 'end';
                                     this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
                                     console.log("Finished Playing Video: " + nextVideo['title']);
