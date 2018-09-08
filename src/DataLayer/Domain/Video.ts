@@ -4,7 +4,9 @@ export default class Video extends DataObject {
         videoKey: "string", //Youtube Key for example but can be used generally
         title: "string",
         description: "string",
-        thumbnail: "string"
+        thumbnail: "string",
+        duration: "number",
+        licensedContent: "boolean"
     };
 
     Table: string = "Videos";

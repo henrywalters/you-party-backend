@@ -4,6 +4,8 @@ const youtube = require("youtube-api-v3-search");
 const Video_1 = require("../../DataLayer/Domain/Video");
 const VideoQuery_1 = require("../../DataLayer/Domain/VideoQuery");
 const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
+const request = require("request");
+const iso8601_duration_1 = require("iso8601-duration");
 class VideoSearchController {
     constructor(ds) {
         this.apiKey = ConfigHelper_1.default.get("youtube-api-key");
@@ -17,21 +19,23 @@ class VideoSearchController {
         this._VideoQuery.getQueryVideos(query, (error, results) => {
             if (error || results === null) { // query not in database
                 this.searchYoutube(query, (videos) => {
-                    this._Video.createArray(videos, (error) => {
-                        if (!error) {
-                            let videoQueries = videos.map(video => {
-                                let q = {
-                                    query: query,
-                                    videoId: video.id
-                                };
-                                return q;
-                            });
-                            this._VideoQuery.createArray(videoQueries, (error, queries) => {
-                                if (!error) {
-                                    this.search(query, cb);
-                                }
-                            });
-                        }
+                    this.getVideoData(videos, videos => {
+                        this._Video.createArray(videos, (error) => {
+                            if (!error) {
+                                let videoQueries = videos.map(video => {
+                                    let q = {
+                                        query: query,
+                                        videoId: video.id
+                                    };
+                                    return q;
+                                });
+                                this._VideoQuery.createArray(videoQueries, (error, queries) => {
+                                    if (!error) {
+                                        this.search(query, cb);
+                                    }
+                                });
+                            }
+                        });
                     });
                 });
             }
@@ -46,6 +50,26 @@ class VideoSearchController {
                     };
                 }));
             }
+        });
+    }
+    getVideoData(videos, cb) {
+        let videoQuery = videos.map(video => {
+            return video.videoKey;
+        }).join(",");
+        let query = "https://www.googleapis.com/youtube/v3/videos?id=" + videoQuery + "&part=contentDetails&key=" + this.apiKey;
+        request(query, (error, response, body) => {
+            body = JSON.parse(body);
+            let details = body.items;
+            for (let i = 0; i < details.length; i++) {
+                if (details[i].id === videos[i].videoKey) {
+                    videos[i].duration = iso8601_duration_1.toSeconds(iso8601_duration_1.parse(details[i].contentDetails.duration));
+                    videos[i].licensedContent = details[i].contentDetails.licensedContent;
+                }
+                else {
+                    throw new Error("Youtube Data Api Failed to Sync Details");
+                }
+            }
+            cb(videos);
         });
     }
     searchYoutube(query, cb) {

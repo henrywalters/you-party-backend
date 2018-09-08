@@ -3,6 +3,8 @@ import * as youtube from 'youtube-api-v3-search';
 import Video from '../../DataLayer/Domain/Video';
 import VideoQuery from '../../DataLayer/Domain/VideoQuery';
 import Config from '../../Helpers/ConfigHelper';
+import * as request from 'request';
+import { parse, toSeconds } from 'iso8601-duration';
 
 interface IVideo {
     id?: string;
@@ -10,6 +12,8 @@ interface IVideo {
     title: string;
     description: string;
     thumbnail: string;
+    duration?: number;
+    licensedContent?: string;
 }
 
 export default class VideoSearchController {
@@ -30,23 +34,25 @@ export default class VideoSearchController {
         this._VideoQuery.getQueryVideos(query, (error, results) => {
             if (error || results === null) { // query not in database
                 this.searchYoutube(query, (videos) => {
-                    this._Video.createArray(videos, (error) => {
-                        if (!error) {
-                            let videoQueries = videos.map(video => {
-                                let q = {
-                                    query: query,
-                                    videoId: video.id
-                                }
-                                return q;
-                            })
+                    this.getVideoData(videos, videos => {
+                        this._Video.createArray(videos, (error) => {
+                            if (!error) {
+                                let videoQueries = videos.map(video => {
+                                    let q = {
+                                        query: query,
+                                        videoId: video.id
+                                    }
+                                    return q;
+                                })
 
-                            this._VideoQuery.createArray(videoQueries, (error, queries) => {
-                                if (!error) {
-                                    this.search(query, cb);
-                                }
-                            })
-                        }
-                    })
+                                this._VideoQuery.createArray(videoQueries, (error, queries) => {
+                                    if (!error) {
+                                        this.search(query, cb);
+                                    }
+                                })
+                            }
+                        })
+                    });
                 });
             } else {
                 cb(results.map((res) => {
@@ -62,7 +68,31 @@ export default class VideoSearchController {
         })
     }
 
-    private searchYoutube(query: string, cb: {(results: Array<IVideo>): void}) {
+    public getVideoData(videos: Array<IVideo>, cb: {(results: Array<IVideo>): void}) {
+        let videoQuery = videos.map(video => {
+            return video.videoKey;
+        }).join(",");
+
+        let query = "https://www.googleapis.com/youtube/v3/videos?id=" + videoQuery + "&part=contentDetails&key=" + this.apiKey;
+
+        request(query, (error, response, body) => {
+            body = JSON.parse(body);
+            let details = body.items;
+
+            for (let i = 0; i < details.length; i++) {
+                if (details[i].id === videos[i].videoKey) {
+                    videos[i].duration = toSeconds(parse(details[i].contentDetails.duration));
+                    videos[i].licensedContent = details[i].contentDetails.licensedContent;
+                } else {
+                    throw new Error("Youtube Data Api Failed to Sync Details");
+                }
+            }
+
+            cb(videos);
+        })
+    }
+
+    public searchYoutube(query: string, cb: {(results: Array<IVideo>): void}) {
         youtube(this.apiKey, {
             q: query,
             maxResults: 10,

@@ -84,17 +84,11 @@ export default class PlaylistController {
 
     async voteAsync(guestId: string, playlistId: string, type: string): Promise<Object> {
 
-        console.log("Begin Vote Operation");
-
         const freeVoteTest = false;
 
         let video = await this._Playlist.getPlaylistVideoAsync(playlistId);
 
-        console.log(video);
-
         let guests = await this._Guest.getWhereAsync({guestId: guestId});
-
-        console.log(guests);
 
         if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
             console.log("Guest not in party");
@@ -102,8 +96,6 @@ export default class PlaylistController {
         }
 
         let votes = await this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId});
-
-        console.log(votes);
 
         let addVote = true;
 
@@ -122,16 +114,12 @@ export default class PlaylistController {
         if (votes.length === 1) {
             let oldType = votes[0]['type'];
 
-            console.log("Destroying Vote");
-
             await this._Vote.destroyAsync(votes[0]['id']).catch((error) => {console.log(error)});
 
             if (oldType === type) {
                 addVote = false;
             }
         }
-        
-        console.log("Am voting");
 
         if (addVote) {
             let vote = await this._Vote.createAsync({
@@ -142,9 +130,7 @@ export default class PlaylistController {
         }
  
         let modifiedVideo = await this._Playlist.getPlaylistVideoAsync(playlistId);
-
-        console.log("Begin List Processing Operation");
-
+        
         let rankedVideo = await this.ResourcePool.swapSubListResource<ISortable>("Party-" + video['partyId'], "Playlist", video, modifiedVideo);   
 
         return new Promise<Object> (respond => {

@@ -21,6 +21,11 @@ const port = 8080
 
 let db = new MySQL();
 
+let v = new VideoSearchController(db);
+
+v.search('tool', videos => {
+    console.log(videos);
+})
 let mainApp = new App(db, new ResourcePool(
     [
         "Party"
@@ -47,31 +52,3 @@ mainApp.mountRoutes([
 ]);
 
 server.listen(process.env.PORT || port);
-/*
-let db = new ReQL();
-
-db.connect("YouParty", (error, res) => {
-    if (!error) {
-
-        let app = new App(db, new ResourcePool(
-            [
-                "Party"
-            ]
-        ), [
-            new AuthRoutes(),
-            new UserRoutes(),
-            new PartyRoutes()
-        ]).express;
-
-        app.listen(port, ((err) => {
-            if (err) {
-                return console.log(err);
-            }
-        }));
-
-    } else {
-        console.log(error);
-    }
-}); 
-
-*/

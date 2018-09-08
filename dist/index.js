@@ -6,11 +6,16 @@ const UserRoutes_1 = require("./IOLayer/implementation/UserRoutes");
 const PartyRoutes_1 = require("./IOLayer/implementation/PartyRoutes");
 const ResourcePool_1 = require("./IOLayer/implementation/ResourcePool");
 const MySQL_1 = require("./DataLayer/Database/MySQL");
+const VideoSearchController_1 = require("./BusinessLayer/Implementation/VideoSearchController");
 const VideoRoutes_1 = require("./IOLayer/implementation/VideoRoutes");
 const PlaylistRoutes_1 = require("./IOLayer/implementation/PlaylistRoutes");
 const TestRoutes_1 = require("./IOLayer/implementation/TestRoutes");
 const port = 8080;
 let db = new MySQL_1.default();
+let v = new VideoSearchController_1.default(db);
+v.search('tool', videos => {
+    console.log(videos);
+});
 let mainApp = new App_1.default(db, new ResourcePool_1.default([
     "Party"
 ]), [
@@ -32,32 +37,4 @@ mainApp.mountRoutes([
     new TestRoutes_1.default()
 ]);
 server.listen(process.env.PORT || port);
-/*
-let db = new ReQL();
-
-db.connect("YouParty", (error, res) => {
-    if (!error) {
-
-        let app = new App(db, new ResourcePool(
-            [
-                "Party"
-            ]
-        ), [
-            new AuthRoutes(),
-            new UserRoutes(),
-            new PartyRoutes()
-        ]).express;
-
-        app.listen(port, ((err) => {
-            if (err) {
-                return console.log(err);
-            }
-        }));
-
-    } else {
-        console.log(error);
-    }
-});
-
-*/ 
 //# sourceMappingURL=index.js.map

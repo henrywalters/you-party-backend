@@ -78,18 +78,14 @@ class PlaylistController {
     }
     voteAsync(guestId, playlistId, type) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Begin Vote Operation");
             const freeVoteTest = false;
             let video = yield this._Playlist.getPlaylistVideoAsync(playlistId);
-            console.log(video);
             let guests = yield this._Guest.getWhereAsync({ guestId: guestId });
-            console.log(guests);
             if (guests.length === 0 || guests[0]['partyId'] !== video['partyId']) {
                 console.log("Guest not in party");
                 throw new Error("Guest does not exist/is not in party");
             }
             let votes = yield this._Vote.getWhereAsync({ guestId: guestId, playlistId: playlistId });
-            console.log(votes);
             let addVote = true;
             if (votes.length > 1 && !freeVoteTest) {
                 console.log("Already voted on video");
@@ -103,13 +99,11 @@ class PlaylistController {
             }
             if (votes.length === 1) {
                 let oldType = votes[0]['type'];
-                console.log("Destroying Vote");
                 yield this._Vote.destroyAsync(votes[0]['id']).catch((error) => { console.log(error); });
                 if (oldType === type) {
                     addVote = false;
                 }
             }
-            console.log("Am voting");
             if (addVote) {
                 let vote = yield this._Vote.createAsync({
                     guestId: guestId,
@@ -118,7 +112,6 @@ class PlaylistController {
                 });
             }
             let modifiedVideo = yield this._Playlist.getPlaylistVideoAsync(playlistId);
-            console.log("Begin List Processing Operation");
             let rankedVideo = yield this.ResourcePool.swapSubListResource("Party-" + video['partyId'], "Playlist", video, modifiedVideo);
             return new Promise(respond => {
                 respond(rankedVideo);

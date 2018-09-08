@@ -8,7 +8,9 @@ class Video extends DataObject_1.default {
             videoKey: "string",
             title: "string",
             description: "string",
-            thumbnail: "string"
+            thumbnail: "string",
+            duration: "number",
+            licensedContent: "boolean"
         };
         this.Table = "Videos";
     }
