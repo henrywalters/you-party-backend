@@ -16,7 +16,17 @@ class VideoController {
                     cb("No Video is Playing", null);
                 }
                 else {
-                    cb(null, video[0]);
+                    let playing = video[0];
+                    let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
+                    if (pool !== null) {
+                        let event = pool.EventTimer;
+                        playing['timeElapsed'] = event.getElapsedTime();
+                        playing['timeRemaining'] = event.getRemainingTime();
+                        cb(null, playing);
+                    }
+                    else {
+                        cb("Can't get elapsed time", null);
+                    }
                 }
             }
         });
@@ -45,6 +55,7 @@ class VideoController {
                 cb("Video already playing", null);
             }
             else {
+                console.log(this);
                 let nextVideo = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
                 if (nextVideo !== null) {
                     nextVideo['eventType'] = 'new';

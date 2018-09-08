@@ -5,11 +5,13 @@ const PlaylistController_1 = require("../../BusinessLayer/Implementation/Playlis
 const Auth_1 = require("../../AuthLayer/implementation/Auth");
 const RankHelper_1 = require("../../Helpers/RankHelper");
 const PartyController_1 = require("../../BusinessLayer/Implementation/PartyController");
+const VideoController_1 = require("../../BusinessLayer/Implementation/VideoController");
 class VideoRoutes {
     route(app, socket, ds, pool) {
         let videoSearch = new VideoSearchController_1.default(ds);
         let playlist = new PlaylistController_1.default(ds, pool);
         let party = new PartyController_1.default(ds, pool);
+        let videoController = new VideoController_1.default(ds, pool);
         let auth = new Auth_1.default(ds);
         app.get("/video", (req, res) => {
             if (typeof req.query.q != 'undefined') {
@@ -41,6 +43,28 @@ class VideoRoutes {
                     res.json({
                         success: true,
                         video: video
+                    });
+                }
+            });
+        });
+        app.get("/party/self/playing", (req, res) => {
+            auth.validateHeader(req, res);
+            let user = auth.getSelf(req);
+            party.currentParty(user['id'], (error, party) => {
+                if (!error) {
+                    videoController.getPlayingVideo(party['id'], (error, video) => {
+                        if (!error) {
+                            res.json({
+                                success: true,
+                                video: video
+                            });
+                        }
+                        else {
+                            res.json({
+                                success: false,
+                                error: error
+                            });
+                        }
                     });
                 }
             });

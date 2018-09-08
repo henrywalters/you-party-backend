@@ -8,6 +8,7 @@ class EventTimer {
         this.StopFunction = null;
         this.InitialDuration = 0;
         this.CurrentDuration = 0;
+        this.TimeElapsed = 0;
         this.TimeStarted = 0;
     }
     /**
@@ -23,6 +24,7 @@ class EventTimer {
         this.StartFunction = startFunction;
         this.StopFunction = stopFunction;
         this.CurrentDuration = this.InitialDuration;
+        this.TimeElapsed = 0;
     }
     /**
      * @description Starts the timer and stages the execution function.
@@ -44,6 +46,7 @@ class EventTimer {
         }
         this._EventTimer = null;
         let delta = Date.now() - this.TimeStarted;
+        this.TimeElapsed += delta;
         this.CurrentDuration -= delta;
     }
     /**
@@ -57,6 +60,16 @@ class EventTimer {
         this.InitialDuration = 0;
         this.CurrentDuration = 0;
         this.TimeStarted = 0;
+    }
+    /**
+     * @return Returns the time the event has been waiting. Does not include stopped time.
+     */
+    getElapsedTime() {
+        let delta = Date.now() - this.TimeStarted;
+        return this.TimeElapsed + delta;
+    }
+    getRemainingTime() {
+        return this.InitialDuration - this.getElapsedTime();
     }
 }
 exports.EventTimer = EventTimer;

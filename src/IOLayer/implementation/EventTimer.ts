@@ -4,7 +4,8 @@ export class EventTimer {
     private StartFunction;
     private StopFunction;
     private InitialDuration; 
-    private CurrentDuration;    
+    private CurrentDuration; 
+    private TimeElapsed: number;
     private TimeStarted: number;
 
     constructor() {
@@ -14,6 +15,7 @@ export class EventTimer {
         this.StopFunction = null;
         this.InitialDuration = 0;
         this.CurrentDuration = 0;
+        this.TimeElapsed = 0;
         this.TimeStarted = 0;
     }
 
@@ -30,6 +32,7 @@ export class EventTimer {
         this.StartFunction = startFunction;
         this.StopFunction = stopFunction;
         this.CurrentDuration = this.InitialDuration;
+        this.TimeElapsed = 0;
     }
 
 
@@ -58,6 +61,7 @@ export class EventTimer {
 
         this._EventTimer = null;
         let delta = Date.now() - this.TimeStarted;
+        this.TimeElapsed += delta;
         this.CurrentDuration -= delta;
     }
 
@@ -72,5 +76,17 @@ export class EventTimer {
         this.InitialDuration = 0;
         this.CurrentDuration = 0;
         this.TimeStarted = 0;
+    }
+
+    /**
+     * @return Returns the time the event has been waiting. Does not include stopped time.
+     */
+    public getElapsedTime(): number {
+        let delta = Date.now() - this.TimeStarted;
+        return this.TimeElapsed + delta;
+    }
+
+    public getRemainingTime(): number {
+        return this.InitialDuration - this.getElapsedTime();
     }
 }
