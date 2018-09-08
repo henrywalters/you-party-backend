@@ -46,7 +46,8 @@ class VideoSearchController {
                         videoKey: res['videoKey'],
                         title: res['title'],
                         description: res['description'],
-                        thumbnail: res['thumbnail']
+                        thumbnail: res['thumbnail'],
+                        duration: res['duruation']
                     };
                 }));
             }

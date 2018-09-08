@@ -6,6 +6,7 @@ import RankHelper from '../../Helpers/RankHelper';
 import ResourceQueue from './ResourceQueue';
 import IExecutable from '../interface/IExecutable';
 import { exec } from 'child_process';
+import { EventTimer } from './EventTimer';
 
 interface IPool {
     Type: string;
@@ -21,6 +22,7 @@ interface IPool {
 interface ISubPool {
     SubIndex: string,
     Pool: Array<SocketIO.Socket>
+    EventTimer?: EventTimer;
 }
 
 interface ISubListPool {
