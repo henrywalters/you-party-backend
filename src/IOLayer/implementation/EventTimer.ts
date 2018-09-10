@@ -7,6 +7,7 @@ export class EventTimer {
     private CurrentDuration; 
     private TimeElapsed: number;
     private TimeStarted: number;
+    private Status: string;
 
     constructor() {
         this._EventTimer = null;
@@ -17,6 +18,7 @@ export class EventTimer {
         this.CurrentDuration = 0;
         this.TimeElapsed = 0;
         this.TimeStarted = 0;
+        this.Status = "end";
     }
 
     /**
@@ -33,6 +35,7 @@ export class EventTimer {
         this.StopFunction = stopFunction;
         this.CurrentDuration = this.InitialDuration;
         this.TimeElapsed = 0;
+        this.Status = "new";
     }
 
 
@@ -40,42 +43,50 @@ export class EventTimer {
      * @description Starts the timer and stages the execution function.
      */
     public startEvent(): void {
+        if (this.Status === "new" || this.Status === "stop"){
+            this.Status = "start";
+            if (this.StartFunction !== null) {
+                this.StartFunction();
+            }
 
-        if (this.StartFunction !== null) {
-            this.StartFunction();
+            this.TimeStarted = Date.now();
+            this._EventTimer = setTimeout(this.ExecutionFunction, this.CurrentDuration);
         }
-
-        this.TimeStarted = Date.now();
-        this._EventTimer = setTimeout(this.ExecutionFunction, this.CurrentDuration);
     }
 
     /**
      * @description Ends the event timer and tracks the elapsed time since the last start and updates the current duration.
      */
     public stopEvent(): void {
-        clearTimeout(this._EventTimer);
+        if (this.Status === "start") {
+            this.Status = "stop";
+            clearTimeout(this._EventTimer);
 
-        if (this.StopFunction !== null) {
-            this.StopFunction();
+            if (this.StopFunction !== null) {
+                this.StopFunction();
+            }
+
+            this._EventTimer = null;
+            let delta = Date.now() - this.TimeStarted;
+            this.TimeElapsed += delta;
+            this.CurrentDuration -= delta;
         }
-
-        this._EventTimer = null;
-        let delta = Date.now() - this.TimeStarted;
-        this.TimeElapsed += delta;
-        this.CurrentDuration -= delta;
     }
 
     /**
      * @description destructs the entire event timer object.
      */
     public endEvent(): void {
-        this._EventTimer = null;
-        this.ExecutionFunction = null;
-        this.StartFunction = null;
-        this.StopFunction = null;
-        this.InitialDuration = 0;
-        this.CurrentDuration = 0;
-        this.TimeStarted = 0;
+        if (this.Status === "stop" || this.Status === "start" || this.Status === "new") {
+            this._EventTimer = null;
+            this.ExecutionFunction = null;
+            this.StartFunction = null;
+            this.StopFunction = null;
+            this.InitialDuration = 0;
+            this.CurrentDuration = 0;
+            this.TimeStarted = 0;
+            this.Status = null;
+        }
     }
 
     /**
