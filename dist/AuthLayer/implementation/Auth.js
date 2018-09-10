@@ -113,6 +113,7 @@ class Auth {
     validateToken(token) {
         try {
             let jwt = JWT.verify(token, this.Cert);
+            console.log(jwt);
             if (jwt) {
                 return jwt;
             }

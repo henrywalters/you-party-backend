@@ -129,6 +129,7 @@ export default class Auth implements IAuth {
     validateToken(token: string) {
         try {
             let jwt = JWT.verify(token, this.Cert);
+            console.log(jwt);
             if (jwt) {
                 return jwt;
             } else {
