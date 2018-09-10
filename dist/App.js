@@ -78,6 +78,12 @@ class App {
                 console.log("Joined Sub List Resource");
                 this.ResourcePool.joinSubListPool(resource.resource, resource.subIndex, socket);
             });
+            routes.map(route => {
+                if (route['routeSocket']) {
+                    console.log("Socket Routing: " + route.toString());
+                    route['routeSocket'](socket, this.DataSource, this.ResourcePool);
+                }
+            });
         });
         this.mountRoutes(routes);
         setInterval(() => {

@@ -16,6 +16,7 @@ import { RankTypes } from './Helpers/RankHelper';
 import PlaylistController from './BusinessLayer/Implementation/PlaylistController';
 import * as Events from 'events';
 import VideoController from './BusinessLayer/Implementation/VideoController';
+import ISocketRouter from './IOLayer/interface/ISocketRouter';
 
 class App {
   	public express;
@@ -109,7 +110,12 @@ class App {
 				this.ResourcePool.joinSubListPool(resource.resource, resource.subIndex, socket);
 			})
 
-			
+			routes.map(route => {
+				if (route['routeSocket']) {
+					console.log("Socket Routing: " + route.toString());
+					route['routeSocket'](socket, this.DataSource, this.ResourcePool);
+				}
+			})
 		})
 
 		this.mountRoutes(routes);

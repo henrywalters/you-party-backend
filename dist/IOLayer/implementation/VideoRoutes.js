@@ -6,19 +6,14 @@ const Auth_1 = require("../../AuthLayer/implementation/Auth");
 const RankHelper_1 = require("../../Helpers/RankHelper");
 const PartyController_1 = require("../../BusinessLayer/Implementation/PartyController");
 const VideoController_1 = require("../../BusinessLayer/Implementation/VideoController");
-const SocketIO = require("socket.io");
 class VideoRoutes {
-    route(app, socketServer, ds, pool) {
-        let videoSearch = new VideoSearchController_1.default(ds);
-        let playlist = new PlaylistController_1.default(ds, pool);
-        let party = new PartyController_1.default(ds, pool);
+    routeSocket(socket, ds, pool) {
         let videoController = new VideoController_1.default(ds, pool);
         let auth = new Auth_1.default(ds);
-        let IO = SocketIO.listen(socketServer);
-        IO.on('pause-video', (video) => {
+        socket.on('pause-video', (video) => {
             console.log(video);
             if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
-                IO.emit('video-error', {
+                socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
             }
@@ -29,7 +24,7 @@ class VideoRoutes {
                 if (user) {
                     videoController.pauseVideo(video.partyId, user['id'], (error) => {
                         if (error) {
-                            IO.emit('video-error', {
+                            socket.emit('video-error', {
                                 error: error
                             });
                         }
@@ -37,9 +32,9 @@ class VideoRoutes {
                 }
             }
         });
-        IO.on('start-video', (video) => {
+        socket.on('start-video', (video) => {
             if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
-                IO.emit('video-error', {
+                socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
             }
@@ -48,7 +43,7 @@ class VideoRoutes {
                 if (user) {
                     videoController.startVideo(video.partyId, user['id'], (error) => {
                         if (error) {
-                            IO.emit('video-error', {
+                            socket.emit('video-error', {
                                 error: error
                             });
                         }
@@ -56,6 +51,13 @@ class VideoRoutes {
                 }
             }
         });
+    }
+    route(app, socket, ds, pool) {
+        let videoSearch = new VideoSearchController_1.default(ds);
+        let playlist = new PlaylistController_1.default(ds, pool);
+        let party = new PartyController_1.default(ds, pool);
+        let videoController = new VideoController_1.default(ds, pool);
+        let auth = new Auth_1.default(ds);
         app.get("/video", (req, res) => {
             if (typeof req.query.q != 'undefined') {
                 videoSearch.search(req.query.q, (videos) => {
