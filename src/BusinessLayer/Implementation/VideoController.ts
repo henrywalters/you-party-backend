@@ -159,7 +159,7 @@ export default class VideoController {
 
                                 let event = pool.EventTimer;
                                 
-                                event.newEvent(5000, //nextVideo['duration'] * 1000, 
+                                event.newEvent(nextVideo['duration'] * 1000, 
                                     () => {
                                         nextVideo['eventType'] = 'end';
                                         this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
