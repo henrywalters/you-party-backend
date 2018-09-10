@@ -17,6 +17,7 @@ export default class VideoRoutes implements IResourceRouter {
         let auth = new Auth(ds);
 
         socket.on('pause-video', (video) => {
+            console.log(video);
             if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
                 socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
