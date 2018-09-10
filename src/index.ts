@@ -33,8 +33,7 @@ let mainApp = new App(db, new ResourcePool(
     new PartyRoutes(),
     new VideoRoutes(),
     new PlaylistRoutes(),
-    new TestRoutes(),
-    new VideoRoutes()
+    new TestRoutes()
 ]);
 
 let app = mainApp.express;
@@ -46,8 +45,7 @@ mainApp.mountRoutes([
     new PartyRoutes(),
     new VideoRoutes(),
     new PlaylistRoutes(),
-    new TestRoutes(),
-    new VideoRoutes()
+    new TestRoutes()
 ]);
 
 server.listen(process.env.PORT || port);

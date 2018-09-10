@@ -7,19 +7,23 @@ import Auth from "../../AuthLayer/implementation/Auth";
 import { RankTypes } from '../../Helpers/RankHelper';
 import PartyController from '../../BusinessLayer/Implementation/PartyController';
 import VideoController from '../../BusinessLayer/Implementation/VideoController';
+import * as SocketIO from 'socket.io';
+import { createServer } from 'http';
 
 export default class VideoRoutes implements IResourceRouter {
-    route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
+    route(app: any, socketServer: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
         let videoSearch = new VideoSearchController(ds);
         let playlist = new PlaylistController(ds, pool);
         let party = new PartyController(ds, pool);
         let videoController = new VideoController(ds, pool);
         let auth = new Auth(ds);
 
-        socket.on('pause-video', (video) => {
+        let IO = SocketIO.listen(socketServer);
+
+        IO.on('pause-video', (video) => {
             console.log(video);
             if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
-                socket.emit('video-error', {
+                IO.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
             } else {
@@ -29,7 +33,7 @@ export default class VideoRoutes implements IResourceRouter {
                 if (user) {
                     videoController.pauseVideo(video.partyId, user['id'], (error) => {
                         if (error) {
-                            socket.emit('video-error', {
+                            IO.emit('video-error', {
                                 error: error
                             })
                         }
@@ -39,9 +43,9 @@ export default class VideoRoutes implements IResourceRouter {
             }
         })
 
-        socket.on('start-video', (video) => {
+        IO.on('start-video', (video) => {
             if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
-                socket.emit('video-error', {
+                IO.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
             } else {
@@ -49,7 +53,7 @@ export default class VideoRoutes implements IResourceRouter {
                 if (user) {
                     videoController.startVideo(video.partyId, user['id'], (error) => {
                         if (error) {
-                            socket.emit('video-error', {
+                            IO.emit('video-error', {
                                 error: error
                             })
                         }
