@@ -11,8 +11,9 @@ class VideoRoutes {
         let videoController = new VideoController_1.default(ds, pool);
         let auth = new Auth_1.default(ds);
         socket.on('pause-video', (video) => {
+            console.log(JSON.parse(video));
             console.log(video);
-            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+            if (typeof (video.partyId) === 'undefined' || typeof (video.jwt) === 'undefined') {
                 socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
@@ -33,7 +34,7 @@ class VideoRoutes {
             }
         });
         socket.on('start-video', (video) => {
-            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+            if (typeof (video.partyId) === 'undefined' || typeof (video.jwt) === 'undefined') {
                 socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });

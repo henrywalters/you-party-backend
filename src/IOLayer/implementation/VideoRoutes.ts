@@ -18,8 +18,9 @@ export default class VideoRoutes implements IResourceRouter, ISocketRouter {
         let auth = new Auth(ds);
 
         socket.on('pause-video', (video) => {
+            console.log(JSON.parse(video));
             console.log(video);
-            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+            if (typeof (video.partyId) === 'undefined' || typeof (video.jwt) === 'undefined') {
                 socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
@@ -41,7 +42,7 @@ export default class VideoRoutes implements IResourceRouter, ISocketRouter {
         })
 
         socket.on('start-video', (video) => {
-            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+            if (typeof (video.partyId) === 'undefined' || typeof (video.jwt) === 'undefined') {
                 socket.emit('video-error', {
                     error: "pause-video requires partyId and jwt to be passed"
                 });
