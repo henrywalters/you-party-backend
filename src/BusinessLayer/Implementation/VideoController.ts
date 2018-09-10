@@ -2,12 +2,13 @@ import IQueryable from '../../DataLayer/Interface/IQueryable';
 import ResourcePool from '../../IOLayer/implementation/ResourcePool';
 import IResourcePool from '../../IOLayer/interface/IResourcePool';
 import Playlist from '../../DataLayer/Domain/Playlist';
-
+import Party from '../../DataLayer/Domain/Party';
 
 export default class VideoController {
     private DataSource: IQueryable;
     private ResourcePool: IResourcePool;
     private _Playlist: Playlist;
+    private _Party: Party;
     public IsPlaying: boolean;
 
     constructor(ds: IQueryable, rp: IResourcePool) {
@@ -17,6 +18,77 @@ export default class VideoController {
 
         this._Playlist = new Playlist();
         this._Playlist.setDataSource(this.DataSource);
+
+        this._Party = new Party();
+        this._Party.setDataSource(this.DataSource);
+    }
+
+    isPartyOwner(partyId: string, userId: string, cb: {(isPartyOwner: boolean)}) {
+        this._Party.get(partyId, (error, party) => {
+            if (!error) {
+                if (party['host'] === userId) {
+                    cb(true);
+                }
+            }
+
+            cb(false);
+        })
+    }
+
+    bufferVideo(partyId: string, userId: string, cb: {(error: string): void}) {
+        this.pauseVideo(partyId, userId, cb);
+    }
+
+    pauseVideo(partyId: string, userId: string, cb: {(error: string): void}) {
+        this.isPartyOwner(partyId, userId, ownsParty => {
+            if (ownsParty) {
+                let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
+                if (pool !== null) {
+                    let event = pool.EventTimer;
+                    event.stopEvent();
+                    let change = {
+                        party: partyId,
+                        status: 'pause'
+                    }
+                    this.ResourcePool.updateSubResource("Party-" + partyId, "Video", change);
+                    cb(null);
+                } else {
+                    cb("pool does not exist");
+                }
+            } else {
+                cb("Party does not exist/belong to user");
+            }
+        })
+    }
+
+    startVideo(partyId: string, userId: string, cb: {(error: string): void}) {
+        this.isPartyOwner(partyId, userId, ownsParty => {
+            if (ownsParty) {
+                let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
+                if (pool !== null) {
+                    let event = pool.EventTimer;
+                    event.startEvent();
+                    let change = {
+                        party: partyId,
+                        status: 'start'
+                    }
+                    this.ResourcePool.updateSubResource("Party-" + partyId, "Video", change);
+                    cb(null);
+                } else {
+                    cb("pool does not exist");
+                }
+            } else {
+                cb("Party does not exist/belong to user");
+            }
+        })
+    }
+
+    skipVideo(partyId: string, userId: string, cb: {(error: string, video: Object): void}) {
+        this.endPlayingVideo(partyId, (error) => {
+            if (!error) {
+                this.playNextVideo(partyId, cb);
+            }
+        })
     }
 
     getPlayingVideo(partyId: string, cb: {(error: string, video: Object): void}): void {
@@ -87,7 +159,7 @@ export default class VideoController {
 
                                 let event = pool.EventTimer;
                                 
-                                event.newEvent(nextVideo['duration'] * 1000, 
+                                event.newEvent(5000, //nextVideo['duration'] * 1000, 
                                     () => {
                                         nextVideo['eventType'] = 'end';
                                         this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);

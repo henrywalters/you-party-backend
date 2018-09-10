@@ -13,6 +13,44 @@ class VideoRoutes {
         let party = new PartyController_1.default(ds, pool);
         let videoController = new VideoController_1.default(ds, pool);
         let auth = new Auth_1.default(ds);
+        socket.on('pause-video', (video) => {
+            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+                socket.emit('video-error', {
+                    error: "pause-video requires partyId and jwt to be passed"
+                });
+            }
+            else {
+                let user = auth.validateToken(video.jwt);
+                if (user) {
+                    videoController.pauseVideo(video.partyId, user['id'], (error) => {
+                        if (error) {
+                            socket.emit('video-error', {
+                                error: error
+                            });
+                        }
+                    });
+                }
+            }
+        });
+        socket.on('start-video', (video) => {
+            if (typeof (video.partyId) !== 'undefined' && typeof (video.jwt) !== 'undefined') {
+                socket.emit('video-error', {
+                    error: "pause-video requires partyId and jwt to be passed"
+                });
+            }
+            else {
+                let user = auth.validateToken(video.jwt);
+                if (user) {
+                    videoController.startVideo(video.partyId, user['id'], (error) => {
+                        if (error) {
+                            socket.emit('video-error', {
+                                error: error
+                            });
+                        }
+                    });
+                }
+            }
+        });
         app.get("/video", (req, res) => {
             if (typeof req.query.q != 'undefined') {
                 videoSearch.search(req.query.q, (videos) => {
