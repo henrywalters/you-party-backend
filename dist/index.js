@@ -19,7 +19,8 @@ let mainApp = new App_1.default(db, new ResourcePool_1.default([
     new PartyRoutes_1.default(),
     new VideoRoutes_1.default(),
     new PlaylistRoutes_1.default(),
-    new TestRoutes_1.default()
+    new TestRoutes_1.default(),
+    new VideoRoutes_1.default()
 ]);
 let app = mainApp.express;
 let server = mainApp.Server;
@@ -29,7 +30,8 @@ mainApp.mountRoutes([
     new PartyRoutes_1.default(),
     new VideoRoutes_1.default(),
     new PlaylistRoutes_1.default(),
-    new TestRoutes_1.default()
+    new TestRoutes_1.default(),
+    new VideoRoutes_1.default()
 ]);
 server.listen(process.env.PORT || port);
 //# sourceMappingURL=index.js.map
