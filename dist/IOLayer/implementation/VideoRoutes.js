@@ -21,6 +21,8 @@ class VideoRoutes {
             }
             else {
                 let user = auth.validateToken(video.jwt);
+                console.log(user);
+                console.log("pausing  video");
                 if (user) {
                     videoController.pauseVideo(video.partyId, user['id'], (error) => {
                         if (error) {
