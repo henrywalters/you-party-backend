@@ -20,7 +20,7 @@ class VideoRoutes {
                 let user = auth.validateToken(video.jwt);
                 if (user) {
                     videoController.pauseVideo(video.partyId, user['id'], (error) => {
-                        if (error) {
+                        if (error !== null) {
                             socket.emit('video-error', {
                                 error: error
                             });
@@ -39,7 +39,7 @@ class VideoRoutes {
                 let user = auth.validateToken(video.jwt);
                 if (user) {
                     videoController.startVideo(video.partyId, user['id'], (error) => {
-                        if (error) {
+                        if (error !== null) {
                             socket.emit('video-error', {
                                 error: error
                             });

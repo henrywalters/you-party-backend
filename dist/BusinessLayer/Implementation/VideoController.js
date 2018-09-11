@@ -32,11 +32,6 @@ class VideoController {
                 if (pool !== null) {
                     let event = pool.EventTimer;
                     event.stopEvent();
-                    let change = {
-                        party: partyId,
-                        status: 'pause'
-                    };
-                    this.ResourcePool.updateSubResource("Party-" + partyId, "Video", change);
                     cb(null);
                 }
                 else {
@@ -55,11 +50,6 @@ class VideoController {
                 if (pool !== null) {
                     let event = pool.EventTimer;
                     event.startEvent();
-                    let change = {
-                        party: partyId,
-                        status: 'start'
-                    };
-                    this.ResourcePool.updateSubResource("Party-" + partyId, "Video", change);
                     cb(null);
                 }
                 else {
