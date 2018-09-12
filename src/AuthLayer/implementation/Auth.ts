@@ -11,7 +11,7 @@ export default class Auth implements IAuth {
     
     Controller: UserController;
     Cert: string;
-    AccessExpiration: number = 3600 * 24 * 7;
+    AccessExpiration: number = 3600 * 24;
     RefreshExpiration: number = 3600 * 24 * 30;
 
     constructor(datasource: IQueryable) {
@@ -129,7 +129,6 @@ export default class Auth implements IAuth {
     validateToken(token: string) {
         try {
             let jwt = JWT.verify(token, this.Cert);
-            console.log(jwt);
             if (jwt) {
                 return jwt;
             } else {

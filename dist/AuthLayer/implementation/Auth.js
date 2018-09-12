@@ -6,7 +6,7 @@ const UUID = require("uuid/v4");
 const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
 class Auth {
     constructor(datasource) {
-        this.AccessExpiration = 3600 * 24 * 7;
+        this.AccessExpiration = 3600 * 24;
         this.RefreshExpiration = 3600 * 24 * 30;
         this.Controller = new UserController_1.default(datasource);
         this.Cert = ConfigHelper_1.default.getCert("key");
@@ -113,7 +113,6 @@ class Auth {
     validateToken(token) {
         try {
             let jwt = JWT.verify(token, this.Cert);
-            console.log(jwt);
             if (jwt) {
                 return jwt;
             }
