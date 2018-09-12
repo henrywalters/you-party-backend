@@ -11,7 +11,7 @@ export default class Auth implements IAuth {
     
     Controller: UserController;
     Cert: string;
-    AccessExpiration: number = 3600 * 24;
+    AccessExpiration: number = 3600 * 24 * 7;
     RefreshExpiration: number = 3600 * 24 * 30;
 
     constructor(datasource: IQueryable) {

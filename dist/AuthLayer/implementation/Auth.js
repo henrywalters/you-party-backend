@@ -6,7 +6,7 @@ const UUID = require("uuid/v4");
 const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
 class Auth {
     constructor(datasource) {
-        this.AccessExpiration = 3600 * 24;
+        this.AccessExpiration = 3600 * 24 * 7;
         this.RefreshExpiration = 3600 * 24 * 30;
         this.Controller = new UserController_1.default(datasource);
         this.Cert = ConfigHelper_1.default.getCert("key");

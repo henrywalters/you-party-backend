@@ -66,10 +66,12 @@ class App {
 							licensedContent: video['licensedContent']
 						}
 					})
-					resourcepool.createPool("Party-" + party['id']);
-					resourcepool.createSubListPool("Party-" + party['id'], "Playlist", RankTypes["Wilson Lower Bound"], sortablePlaylist);
-					resourcepool.createSubPool("Party-" + party['id'], "Votes");
-					resourcepool.createSubPool("Party-" + party['id'], "Video");
+					this.ResourcePool.createPool("Party-" + party['id']);
+					this.ResourcePool.createSubListPool("Party-" + party['id'], "Playlist", RankTypes["Wilson Lower Bound"], sortablePlaylist);
+					this.ResourcePool.createSubPool("Party-" + party['id'], "Votes");
+					this.ResourcePool.createSubPool("Party-" + party['id'], "Video");
+
+					console.log(sortablePlaylist);
 
 					videoController.playNextVideo(party['id'], (error, video) => {
 						console.log(error, video);

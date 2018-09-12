@@ -130,9 +130,9 @@ export default class VideoController {
             if (video !== null) {
                 cb("Video already playing", null);
             } else {
-                console.log(this);
-                
                 let nextVideo = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
+
+                console.log(nextVideo);
                 
                 if (nextVideo !== null) {
 
@@ -148,7 +148,7 @@ export default class VideoController {
                             if (pool !== null) {
 
                                 let event = pool.EventTimer;
-                                
+                                let self = this;
                                 event.newEvent(nextVideo['duration'] * 1000, 
                                     () => {
                                         nextVideo['eventType'] = 'end';
@@ -156,9 +156,7 @@ export default class VideoController {
                                         console.log("Finished Playing Video: " + nextVideo['title']);
                                         this.endPlayingVideo(partyId, (error) => {
                                             if (!error) {
-                                                this.playNextVideo(partyId, (error, video) => {
-                                                
-                                                });
+                                                self.playNextVideo(partyId, (error, video) => {});
                                             }
                                         })
                                     },() => {
@@ -173,7 +171,7 @@ export default class VideoController {
 
                                     console.log("Duration: " + nextVideo['duration']);
 
-                                    event.startEvent();
+                                    //event.startEvent();
 
                                     cb(null, nextVideo);
                             } else {

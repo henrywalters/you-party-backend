@@ -118,8 +118,8 @@ class VideoController {
                 cb("Video already playing", null);
             }
             else {
-                console.log(this);
                 let nextVideo = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
+                console.log(nextVideo);
                 if (nextVideo !== null) {
                     nextVideo['eventType'] = 'new';
                     this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
@@ -129,14 +129,14 @@ class VideoController {
                             let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
                             if (pool !== null) {
                                 let event = pool.EventTimer;
+                                let self = this;
                                 event.newEvent(nextVideo['duration'] * 1000, () => {
                                     nextVideo['eventType'] = 'end';
                                     this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
                                     console.log("Finished Playing Video: " + nextVideo['title']);
                                     this.endPlayingVideo(partyId, (error) => {
                                         if (!error) {
-                                            this.playNextVideo(partyId, (error, video) => {
-                                            });
+                                            self.playNextVideo(partyId, (error, video) => { });
                                         }
                                     });
                                 }, () => {
@@ -149,7 +149,7 @@ class VideoController {
                                     console.log("Finished Playing Video: " + nextVideo['title']);
                                 });
                                 console.log("Duration: " + nextVideo['duration']);
-                                event.startEvent();
+                                //event.startEvent();
                                 cb(null, nextVideo);
                             }
                             else {
