@@ -27,13 +27,13 @@ export default class MySQL implements IDatabase, IQueryable {
             database: "heroku_f49b8ff223a1846"
         }
         */
-        let config = Config.get("database-production");
-
+        //let config = Config.get("database-pr  oduction");
+        console.log(process.env);
         this.ConnectionDetails = {
-            host: config['host'],
-            user: config['user'],
-            password: config['password'],
-            database: config['database']
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
         }
         this.connect("MySQL");
     }

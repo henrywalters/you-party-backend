@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mysql = require("mysql");
 const UUID = require("uuid/v4");
-const ConfigHelper_1 = require("../../Helpers/ConfigHelper");
 class MySQL {
     constructor() {
         /*this.ConnectionDetails = {
@@ -12,12 +11,13 @@ class MySQL {
             database: "heroku_f49b8ff223a1846"
         }
         */
-        let config = ConfigHelper_1.default.get("database-production");
+        //let config = Config.get("database-pr  oduction");
+        console.log(process.env);
         this.ConnectionDetails = {
-            host: config['host'],
-            user: config['user'],
-            password: config['password'],
-            database: config['database']
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
         };
         this.connect("MySQL");
     }

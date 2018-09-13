@@ -20,7 +20,7 @@ export default class VideoSearchController {
     DataSource: IQueryable;
     private _Video: Video;
     private _VideoQuery: VideoQuery;
-    private apiKey = Config.get("youtube-api-key")
+    private apiKey = process.env.YT_API_KEY
 
     constructor(ds: IQueryable) {
         this.DataSource = ds;
