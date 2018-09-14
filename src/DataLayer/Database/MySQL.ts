@@ -28,7 +28,7 @@ export default class MySQL implements IDatabase, IQueryable {
         }
         */
         //let config = Config.get("database-pr  oduction");
-        console.log(process.env);
+        console.log(process.env); 
         this.ConnectionDetails = {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
