@@ -93,8 +93,12 @@ export class EventTimer {
      * @return Returns the time the event has been waiting. Does not include stopped time.
      */
     public getElapsedTime(): number {
-        let delta = Date.now() - this.TimeStarted;
-        return this.TimeElapsed + delta;
+        if (this.Status === "start") {
+            let delta = Date.now() - this.TimeStarted;
+            return this.TimeElapsed + delta;
+        } else {
+            return this.TimeElapsed;
+        }
     }
 
     public getRemainingTime(): number {
