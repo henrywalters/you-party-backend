@@ -19,6 +19,7 @@ class MySQL {
             password: process.env.DB_PASS,
             database: process.env.DB_NAME
         };
+        console.log(this.ConnectionDetails);
         this.connect("MySQL");
     }
     connect(database, callback) {
