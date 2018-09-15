@@ -185,7 +185,7 @@ export default class ResourcePool implements IResourcePool {
     joinSubListPool<T extends ISortable>(resourceType: string, subIndex: string, socket: SocketIO.Socket): void {
         let pool = this.getSubListPool(resourceType, subIndex);
         pool.Pool.push(socket);
-        console.log(this.Pools[resourceType].Pool.length + " Members in Sub List Resource Pool: " + resourceType + " - " + subIndex);
+        console.log(this.Pools[resourceType].SubListPools[subIndex].Pool.length + " Members in Sub List Resource Pool: " + resourceType + " - " + subIndex);
     }
 
     private resourceChange(resourceType: string, changeType: string, resource: Object) {
