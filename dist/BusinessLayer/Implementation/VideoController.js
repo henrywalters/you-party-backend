@@ -136,7 +136,7 @@ class VideoController {
                                     console.log("Finished Playing Video: " + nextVideo['title']);
                                     this.endPlayingVideo(partyId, (error) => {
                                         if (!error) {
-                                            self.playNextVideo(partyId, (error, video) => { });
+                                            this.playNextVideo(partyId, (error, video) => { });
                                         }
                                     });
                                 }, () => {

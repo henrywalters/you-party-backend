@@ -56,6 +56,25 @@ export default class VideoRoutes implements IResourceRouter, ISocketRouter {
                 
             }
         })
+
+        socket.on('stop-video', (video) => {
+            if (typeof (video.partyId) === 'undefined' || typeof (video.jwt) === 'undefined') {
+                socket.emit('video-error', {
+                    error: "stop-video requires partyId and jwt to be passed"
+                });
+            } else {
+                let user = auth.validateToken(video.jwt);
+                if (user) {
+                    videoController.endPlayingVideo(video.partyId, (error) => {
+                        videoController.playNextVideo(video.partyId, (error, video) => {
+                            if (!error) {
+                                console.log("Playing Next Video: " + video['title']);
+                            }
+                        })
+                    })
+                }
+            }
+        })
     }
 
     route(app: any, socket: SocketIO.Socket, ds: IQueryable, pool: IResourcePool) {
