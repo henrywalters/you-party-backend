@@ -29,10 +29,11 @@ export default class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote();
         this._Vote.setDataSource(ds);
-
+        
+        this.ResourcePool = resourcePool;
         this._VideoController = new VideoController(this.DataSource, this.ResourcePool);
 
-        this.ResourcePool = resourcePool;
+        
     }
 
     addToPlaylist(guestId: string, partyId: string, videoId: string, cb: {(error: string, video: Object): void}): void {

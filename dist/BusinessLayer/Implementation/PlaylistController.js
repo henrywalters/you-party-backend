@@ -25,8 +25,8 @@ class PlaylistController {
         this._Guest.setDataSource(ds);
         this._Vote = new Vote_1.default();
         this._Vote.setDataSource(ds);
-        this._VideoController = new VideoController_1.default(this.DataSource, this.ResourcePool);
         this.ResourcePool = resourcePool;
+        this._VideoController = new VideoController_1.default(this.DataSource, this.ResourcePool);
     }
     addToPlaylist(guestId, partyId, videoId, cb) {
         this._Guest.getWhere({ guestId: guestId }, (error, guests) => {
