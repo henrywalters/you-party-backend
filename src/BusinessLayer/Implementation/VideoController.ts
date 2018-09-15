@@ -130,6 +130,10 @@ export default class VideoController {
             if (video !== null) {
                 cb("Video already playing", null);
             } else {
+
+                console.log("Does sub resource pool exist?");
+                console.log(this.ResourcePool);
+
                 let nextVideo = this.ResourcePool.getSubListResource("Party-" + partyId, "Playlist", 0);
 
                 console.log(nextVideo);

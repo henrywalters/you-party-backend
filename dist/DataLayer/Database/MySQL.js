@@ -4,15 +4,6 @@ const mysql = require("mysql");
 const UUID = require("uuid/v4");
 class MySQL {
     constructor() {
-        /*this.ConnectionDetails = {
-            host: "us-cdbr-iron-east-04.cleardb.net",
-            user: "b8d1c717cbeae9",
-            password: "50538b85",
-            database: "heroku_f49b8ff223a1846"
-        }
-        */
-        //let config = Config.get("database-pr  oduction");
-        console.log(process.env);
         this.ConnectionDetails = {
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
