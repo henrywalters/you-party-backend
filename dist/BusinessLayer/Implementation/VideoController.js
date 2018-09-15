@@ -126,7 +126,8 @@ class VideoController {
                     nextVideo['eventType'] = 'new';
                     this.ResourcePool.updateSubResource("Party-" + partyId, "Video", nextVideo);
                     this.setVideoStatus(nextVideo['id'], 'playing', (error) => {
-                        if (!error) {
+                        console.log("Just set video status to playing:  " + error);
+                        if (error !== null) {
                             this.ResourcePool.removeSubListResource("Party-" + partyId, "Playlist", nextVideo);
                             let pool = this.ResourcePool.getSubPool("Party-" + partyId, "Video");
                             if (pool !== null) {
